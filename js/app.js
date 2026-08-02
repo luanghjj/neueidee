@@ -1884,23 +1884,30 @@ const App = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-    } catch (_) {
+    } catch (_) {}
+
+    // Fallback to direct client-side fetch if proxy returns 404 or network error
+    if (!res || !res.ok) {
       let directUrl = endpoint;
       if (!directUrl.includes('/chat/completions')) {
         directUrl = directUrl.replace(/\/+$/, '') + '/chat/completions';
       }
       const headers = { 'Content-Type': 'application/json' };
       if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
-      res = await fetch(directUrl, {
+      const directRes = await fetch(directUrl, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({ model, messages: fullMessages, temperature: 0.7 })
-      });
+      }).catch(() => null);
+
+      if (directRes && directRes.ok) {
+        res = directRes;
+      }
     }
 
-    if(!res.ok){
-      const err = await res.text().catch(()=>'');
-      throw new Error(`API-Fehler (${res.status}): ${err.slice(0,120) || res.statusText}`);
+    if(!res || !res.ok){
+      const err = res ? await res.text().catch(()=>'') : '';
+      throw new Error(`API-Fehler (${res ? res.status : 'Network'}): ${err.slice(0,120) || (res ? res.statusText : 'Verbindung fehlgeschlagen')}`);
     }
 
     const data = await res.json();
@@ -1934,14 +1941,17 @@ const App = {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-    } catch (_) {
+    } catch (_) {}
+
+    // Fallback to direct client-side fetch if proxy returns 404 or network error
+    if (!res || !res.ok) {
       let directUrl = endpoint;
       if (!directUrl.includes('/chat/completions')) {
         directUrl = directUrl.replace(/\/+$/, '') + '/chat/completions';
       }
       const headers = { 'Content-Type': 'application/json' };
       if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
-      res = await fetch(directUrl, {
+      const directRes = await fetch(directUrl, {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({
@@ -1949,12 +1959,16 @@ const App = {
           messages: payload.messages,
           temperature: payload.temperature
         })
-      });
+      }).catch(() => null);
+
+      if (directRes && directRes.ok) {
+        res = directRes;
+      }
     }
 
-    if(!res.ok){
-      const err = await res.text().catch(()=>'');
-      throw new Error(`API-Verbindungsfehler (${res.status}): ${err.slice(0,120) || res.statusText}`);
+    if(!res || !res.ok){
+      const err = res ? await res.text().catch(()=>'') : '';
+      throw new Error(`API-Verbindungsfehler (${res ? res.status : 'Network'}): ${err.slice(0,120) || (res ? res.statusText : 'Verbindung fehlgeschlagen')}`);
     }
 
     const data = await res.json();
