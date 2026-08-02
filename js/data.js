@@ -1,5 +1,56 @@
-/* Spark v3 — Data Layer (localStorage) */
+/* Spark v3 — Data Layer (localStorage + Supabase Sync) */
+const SUPABASE_URL = 'https://bknbretpqzbqadensozh.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbmJyZXRwcXpicWFkZW5zb3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MDI0MzAsImV4cCI6MjEwMTI3ODQzMH0.vbrPJD07PYyzV7jaYxAGE2gwpL1w2SELEPDm18Cw06Q';
+
+let _sbClient = null;
+try {
+  if (typeof window !== 'undefined' && window.supabase) {
+    _sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+} catch (_) {}
+
 const DB = {
+  supabase: _sbClient,
+
+  // ── SUPABASE CLOUD SYNC ──
+  async syncSupabase(){
+    if (!this.supabase) return;
+    try {
+      // Sync Ideas
+      const { data: remoteIdeas } = await this.supabase.from('ideas').select('*');
+      if (remoteIdeas && remoteIdeas.length) {
+        const local = this.getIdeas();
+        const mergedMap = new Map();
+        [...local, ...remoteIdeas].forEach(item => mergedMap.set(item.id, item));
+        this.saveIdeas(Array.from(mergedMap.values()));
+      }
+    } catch (_) {}
+    try {
+      // Sync Projects
+      const { data: remoteProjects } = await this.supabase.from('projects').select('*');
+      if (remoteProjects && remoteProjects.length) {
+        const local = this.getProjects();
+        const mergedMap = new Map();
+        [...local, ...remoteProjects].forEach(item => mergedMap.set(item.id, item));
+        this.saveProjects(Array.from(mergedMap.values()));
+      }
+    } catch (_) {}
+  },
+
+  async pushSupabase(table, payload){
+    if(!this.supabase) return;
+    try {
+      await this.supabase.from(table).upsert(payload);
+    } catch (_) {}
+  },
+
+  async deleteSupabase(table, id){
+    if(!this.supabase) return;
+    try {
+      await this.supabase.from(table).delete().eq('id', id);
+    } catch (_) {}
+  },
+
   // ── IDEAS ──
   getIdeas(){ return JSON.parse(localStorage.getItem('spark_ideas')||'[]') },
   saveIdeas(list){ localStorage.setItem('spark_ideas', JSON.stringify(list)) },
@@ -14,13 +65,19 @@ const DB = {
     idea.timeline = [{ stage: idea.stage, note:'Idee erfasst', author: idea.author, ts: idea.createdAt }];
     list.unshift(idea);
     this.saveIdeas(list);
+    this.pushSupabase('ideas', idea);
     return idea;
   },
   updateIdea(id, patch){
     const list = this.getIdeas().map(i => i.id===id ? {...i,...patch, updatedAt:Date.now()} : i);
     this.saveIdeas(list);
+    const updated = list.find(i=>i.id===id);
+    if(updated) this.pushSupabase('ideas', updated);
   },
-  deleteIdea(id){ this.saveIdeas(this.getIdeas().filter(i=>i.id!==id)) },
+  deleteIdea(id){
+    this.saveIdeas(this.getIdeas().filter(i=>i.id!==id));
+    this.deleteSupabase('ideas', id);
+  },
   getIdea(id){ return this.getIdeas().find(i=>i.id===id) },
 
   // ── IDEA TIMELINE ──

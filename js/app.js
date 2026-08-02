@@ -76,6 +76,11 @@ const App = {
     this.setActiveNav(this.state.view);
     this.checkIOSInstallPrompt();
     if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    DB.syncSupabase().then(() => {
+      this.renderOverview();
+      this.renderIdeas();
+      this.renderProjects();
+    }).catch(()=>{});
   },
 
   // ── DARK MODE ──
