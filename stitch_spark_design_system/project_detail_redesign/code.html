@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Project Detail - Lumina Design System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined';
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+        }
+        /* Hide scrollbar for gallery */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f4f0f0",
+                        "on-error-container": "#93000a",
+                        "background": "#fdf8f8",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#e4e2e2",
+                        "tertiary-container": "#1c1b1b",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c4c7c7",
+                        "secondary-fixed-dim": "#c7c6c6",
+                        "outline": "#747878",
+                        "on-secondary-fixed-variant": "#464747",
+                        "surface-tint": "#5f5e5e",
+                        "primary": "#000000",
+                        "secondary": "#5e5e5e",
+                        "surface-container-highest": "#e6e1e1",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#484646",
+                        "surface-container-low": "#f7f2f2",
+                        "on-tertiary-container": "#858383",
+                        "surface-variant": "#e6e1e1",
+                        "on-primary-container": "#858383",
+                        "inverse-primary": "#c9c6c5",
+                        "surface-container-high": "#ece7e7",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "surface": "#fdf8f8",
+                        "tertiary-fixed-dim": "#c9c6c5",
+                        "surface-dim": "#ddd9d9",
+                        "on-secondary-container": "#626262",
+                        "primary-fixed-dim": "#c9c6c5",
+                        "surface-container": "#f1eded",
+                        "on-background": "#1c1b1c",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary-container": "#1c1b1b",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-bright": "#fdf8f8",
+                        "on-surface-variant": "#444748",
+                        "on-tertiary-fixed-variant": "#484646",
+                        "secondary-container": "#e1dfdf",
+                        "on-surface": "#1c1b1c",
+                        "error-container": "#ffdad6"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "base": "8px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "margin-desktop": "64px",
+                        "xl": "80px",
+                        "xs": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full transition-opacity duration-200">
+<button aria-label="Go back" class="text-primary hover:opacity-80 flex items-center justify-center p-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary truncate px-4">
+            Spark
+        </h1>
+<button aria-label="Calendar" class="text-primary hover:opacity-80 flex items-center justify-center p-2 rounded-full hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</button>
+</header>
+<main class="pt-16 max-w-[1280px] mx-auto">
+<!-- Hero Section -->
+<section class="w-full relative h-[353px] md:h-[442px] bg-surface-variant">
+<div class="bg-cover bg-center w-full h-full absolute inset-0" data-alt="A pristine, minimalist workspace featuring a sleek modern laptop, architectural blueprints, and subtle geometric desk accessories. The scene is bathed in natural, soft daylight creating a high-contrast monochrome aesthetic with pure whites and deep shadows. Emphasizes clean lines, premium corporate design, and a serene, focused atmosphere." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYt_11Bc737qPJEOeTTzCJ9Yv91ACSKfnPcFyI62zfneYFw3cKDANvVwIOkmdBsOXeYyALbjBzpY04uOIkrOhAszgyhY3ke4P2yPyCxhvDwQljzPE5l36pFbav-pmwsRcxTxhiKyx8LQ2ma5CtdM-jsoL0HLsb4DNvP-jno_kS-xHQUq6XfNzcmsHwUCyrUa7Sw6LSogZR6tuNfVpQmzxTYxwGenyzmiV5ZWoc7wgAc1eMvNGvVONoMFWsZpcmhZRivfyxKi00vQOW')"></div>
+<!-- Gradient Overlay for Text Readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-80"></div>
+<div class="absolute bottom-0 left-0 w-full p-margin-mobile md:p-margin-desktop">
+<div class="inline-flex items-center bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-full border border-outline-variant mb-4">
+<span class="w-2 h-2 rounded-full bg-primary mr-2"></span>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">In Progress</span>
+</div>
+<h2 class="font-display-lg text-display-lg text-primary drop-shadow-sm">Lumina Design System</h2>
+</div>
+</section>
+<!-- Content Grid -->
+<div class="p-margin-mobile md:p-margin-desktop grid grid-cols-1 md:grid-cols-12 gap-gutter mt-md">
+<!-- Left Column: Main Content -->
+<div class="md:col-span-8 flex flex-col gap-lg">
+<!-- Journey Status -->
+<section class="bg-surface border border-outline-variant rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<h3 class="font-headline-md text-headline-md text-primary mb-md">Project Journey</h3>
+<div class="relative">
+<!-- Progress Line -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-surface-variant -translate-y-1/2 z-0 hidden sm:block"></div>
+<div class="absolute top-1/2 left-0 w-[50%] h-0.5 bg-primary -translate-y-1/2 z-0 hidden sm:block"></div>
+<!-- Steps -->
+<div class="flex flex-col sm:flex-row justify-between relative z-10 gap-y-6 sm:gap-y-0">
+<!-- Step 1: Completed -->
+<div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center group">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary ring-4 ring-surface">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+</div>
+<div class="text-left sm:text-center">
+<p class="font-label-md text-label-md text-primary">Discovery</p>
+<p class="font-label-sm text-label-sm text-secondary">Oct 12</p>
+</div>
+</div>
+<!-- Step 2: Completed -->
+<div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center group">
+<div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-on-primary ring-4 ring-surface">
+<span class="material-symbols-outlined text-[16px]" data-icon="check">check</span>
+</div>
+<div class="text-left sm:text-center">
+<p class="font-label-md text-label-md text-primary">Design</p>
+<p class="font-label-sm text-label-sm text-secondary">Nov 05</p>
+</div>
+</div>
+<!-- Step 3: Current -->
+<div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center group">
+<div class="w-8 h-8 rounded-full bg-surface border-2 border-primary flex items-center justify-center ring-4 ring-surface">
+<div class="w-2.5 h-2.5 rounded-full bg-primary"></div>
+</div>
+<div class="text-left sm:text-center">
+<p class="font-label-md text-label-md text-primary font-bold">Implementation</p>
+<p class="font-label-sm text-label-sm text-primary">In Progress</p>
+</div>
+</div>
+<!-- Step 4: Upcoming -->
+<div class="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center group">
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant flex items-center justify-center ring-4 ring-surface">
+</div>
+<div class="text-left sm:text-center opacity-50">
+<p class="font-label-md text-label-md text-secondary">Handoff</p>
+<p class="font-label-sm text-label-sm text-secondary">Pending</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Overview -->
+<section>
+<h3 class="font-headline-md text-headline-md text-primary mb-sm">Overview</h3>
+<div class="font-body-lg text-body-lg text-on-surface-variant space-y-4">
+<p>The Lumina Design System is a comprehensive overhaul of our core digital experience. It focuses on stark minimalism, high contrast, and structural clarity to reduce cognitive load for professional users.</p>
+<p>Current sprint involves translating the Figma components into production-ready Tailwind classes, ensuring strict adherence to the new monochromatic visual language and fluid grid specifications.</p>
+</div>
+</section>
+<!-- Gallery -->
+<section>
+<div class="flex justify-between items-end mb-sm">
+<h3 class="font-headline-md text-headline-md text-primary">Artifacts</h3>
+<button class="font-label-md text-label-md text-secondary hover:text-primary transition-colors flex items-center gap-1">
+                            View All <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+<div class="flex gap-4 overflow-x-auto no-scrollbar pb-4 snap-x">
+<div class="flex-none w-64 md:w-80 snap-start">
+<div class="aspect-[4/3] rounded-lg overflow-hidden border border-outline-variant relative group">
+<div class="bg-cover bg-center w-full h-full transition-transform duration-500 group-hover:scale-105" data-alt="A close-up abstract view of digital interface elements on a stark white background. High contrast typography, sleek lines, and subtle gray shadows form a clean, minimalist structural composition representing UI component architecture." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBcCGw_iPlr7Ok6iiKbJYTsO9oTvN24661_lwBmZ3n3H-Jbnlb7KXqSSC-elFyxek7NhyXyvEamxyY-U_vyjNzJsDrVc8EYOhxV7M28Xf9OqwatsSFKDJ5LBZsWpTacSVRb-rZUSyyu5BsAK2oh_wB_tlXxvKlMgBlCztaAbyCEYTbNgu1DDUX5i3xg2_kWAQ8nByywmqk4dd9WPMOCg-epUQJvzRqBHyGB3gJ0ulCPSapkRruwOdGnrN61haUCk6CMg95aSvuBboH')"></div>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+</div>
+<p class="font-label-md text-label-md text-primary mt-2">Typography Hierarchy</p>
+</div>
+<div class="flex-none w-64 md:w-80 snap-start">
+<div class="aspect-[4/3] rounded-lg overflow-hidden border border-outline-variant relative group">
+<div class="bg-cover bg-center w-full h-full transition-transform duration-500 group-hover:scale-105" data-alt="A beautifully organized grid layout showcasing various minimalist UI components like buttons, input fields, and cards. Designed in a pure black and white monochrome palette, demonstrating extreme clarity, precise alignment, and professional corporate aesthetic." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDu1eryKTW2_4aJs3LklPSgu8s8NWfwBGURNJ2tB9KBXI4C0qMXqAuzfG8Yhfba9LcGBXaRV1p7ppZcfPyc4Fn3pk_M8-XRuolcIlAk3J4uVX8Vkjt-uBaCECkbJV5V_YA0QNogDjGjjvLd4WhM_LjVqn1HMKXgBCFckchDtl2IaDVd4VMNkOrAN8zz68PDazEAz4i3Ph6EzlFXXPrCtOOWLPRGCaILPeux3AhMRVz3H7y_0542qrxhQT6syz9yyKes-3EuyZu2jVcY')"></div>
+<div class="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300"></div>
+</div>
+<p class="font-label-md text-label-md text-primary mt-2">Component Library v1.2</p>
+</div>
+<div class="flex-none w-64 md:w-80 snap-start">
+<div class="aspect-[4/3] rounded-lg overflow-hidden border border-outline-variant relative group bg-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-[48px] text-secondary" data-icon="add_photo_alternate">add_photo_alternate</span>
+</div>
+<p class="font-label-md text-label-md text-primary mt-2">Add New Artifact</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Sidebar -->
+<div class="md:col-span-4 flex flex-col gap-lg">
+<!-- Resources (Links) -->
+<section class="bg-surface border border-outline-variant rounded-xl p-md shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<h3 class="font-headline-md text-headline-md text-primary mb-md border-b border-outline-variant pb-sm">Resources</h3>
+<ul class="flex flex-col gap-0">
+<li class="border-b border-outline-variant last:border-0 py-4 first:pt-0 last:pb-0">
+<a class="flex items-center gap-3 group" href="#">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="description">description</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-primary group-hover:underline">Figma Master File</p>
+<p class="font-label-sm text-label-sm text-secondary">Updated 2 days ago</p>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="open_in_new">open_in_new</span>
+</a>
+</li>
+<li class="border-b border-outline-variant last:border-0 py-4 first:pt-0 last:pb-0">
+<a class="flex items-center gap-3 group" href="#">
+<div class="w-10 h-10 rounded bg-surface-variant flex items-center justify-center group-hover:bg-primary group-hover:text-on-primary transition-colors border border-outline-variant">
+<span class="material-symbols-outlined text-[20px]" data-icon="code">code</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-primary group-hover:underline">Storybook Repository</p>
+<p class="font-label-sm text-label-sm text-secondary">Main branch</p>
+</div>
+<span class="material-symbols-outlined text-secondary group-hover:text-primary transition-colors" data-icon="open_in_new">open_in_new</span>
+</a>
+</li>
+</ul>
+<button class="w-full mt-4 py-3 bg-surface border border-outline-variant rounded-lg font-label-md text-label-md text-primary hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span> Add Link
+                    </button>
+</section>
+<!-- Private Notes -->
+<section class="bg-surface border border-outline-variant rounded-xl overflow-hidden shadow-[0px_4px_20px_rgba(0,0,0,0.04)]">
+<div class="bg-surface-variant p-4 flex items-center gap-2 border-b border-outline-variant">
+<span class="material-symbols-outlined text-primary" data-icon="lock">lock</span>
+<h3 class="font-label-md text-label-md text-primary font-bold tracking-widest uppercase">Private Notes</h3>
+</div>
+<div class="p-4">
+<textarea class="w-full h-32 bg-transparent border-0 p-0 font-body-md text-body-md text-primary focus:ring-0 placeholder:text-outline resize-none" placeholder="Add confidential project notes here..."></textarea>
+</div>
+<div class="p-4 pt-0 flex justify-end">
+<button class="px-4 py-2 bg-primary text-on-primary rounded font-label-md text-label-md hover:opacity-90 transition-opacity">Save Note</button>
+</div>
+</section>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe bg-surface/80 backdrop-blur-md rounded-t-xl border-t border-outline-variant shadow-sm transition-transform duration-150">
+<button aria-label="home" class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="home">home</span>
+</button>
+<button aria-label="search" class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="search">search</span>
+</button>
+<button aria-label="add" class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="add">add</span>
+</button>
+<button aria-label="folder" class="flex flex-col items-center justify-center w-full h-full relative after:content-['\2022'] after:absolute after:-bottom-1 after:text-[10px] text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="folder" style="font-variation-settings: 'FILL' 1;">folder</span>
+</button>
+<button aria-label="person" class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all">
+<span class="material-symbols-outlined mb-1" data-icon="person">person</span>
+</button>
+</nav>
+</body></html>

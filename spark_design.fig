@@ -1,0 +1,66 @@
+{
+  "type": "figma-context",
+  "app": "Spark",
+  "version": "3.0",
+  "description": "Spark — Idea Capture App, redesign to v3",
+  "screens": [
+    {
+      "name": "Overview",
+      "icon": "map",
+      "description": "Dashboard with pipeline stats, bento blocks, activity feed"
+    },
+    {
+      "name": "Ideas",
+      "icon": "lightbulb",
+      "description": "List of all ideas, filterable by stage, 3 view modes"
+    },
+    {
+      "name": "Quick Capture",
+      "icon": "plus",
+      "description": "Bottom sheet modal for rapid idea input"
+    },
+    {
+      "name": "Journey",
+      "icon": "rocket",
+      "description": "Projects with milestone tracking and update log"
+    },
+    {
+      "name": "Profile",
+      "icon": "user",
+      "description": "User stats, achievements, settings"
+    }
+  ],
+  "designTokens": {
+    "colors": {
+      "bg": "#07070f",
+      "surface": "#0f0f1c",
+      "elevated": "#161627",
+      "border": "rgba(255,255,255,0.07)",
+      "accent": "#6366f1",
+      "textPrimary": "#f8f8ff",
+      "textSecondary": "#6b7280",
+      "textDim": "#374151",
+      "stageAmber": "#f59e0b",
+      "stageBlue": "#3b82f6",
+      "stageViolet": "#8b5cf6",
+      "stageGreen": "#10b981"
+    },
+    "typography": {
+      "fontFamily": "Inter",
+      "h1": "28px/700",
+      "h2": "20px/600",
+      "body": "15px/450",
+      "label": "11px/600/uppercase"
+    },
+    "radius": {
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "20px"
+    },
+    "icons": "Lucide (stroke-width: 1.5px)",
+    "navHeight": "64px"
+  },
+  "style": "Apple-inspired, Linear.app aesthetic, ultra-clean dark mode",
+  "note": "This is a placeholder context file. Upload alongside DESIGN.md and spark_assets.zip for full Stitch context."
+}

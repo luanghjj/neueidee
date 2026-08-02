@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="de" class="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#fdf8f8">
+<title>Spark — Ideen & Projekte</title>
+<script>
+  (function(){
+    const _w = console.warn;
+    console.warn = function(...a){
+      if(a[0] && typeof a[0]==='string' && a[0].includes('cdn.tailwindcss.com')) return;
+      _w.apply(console, a);
+    };
+  })();
+</script>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    colors: {
+      "bg": "#fdf8f8", "surface": "#ffffff", "surface-low": "#f7f2f2",
+      "surface-mid": "#f1eded", "surface-high": "#ece7e7", "surface-highest": "#e6e1e1",
+      "border": "#e5e1e1", "border-mid": "#c4c7c7",
+      "primary": "#000000", "on-primary": "#ffffff",
+      "secondary": "#5e5e5e", "dim": "#6b7280",
+      "stage-spark": "#f59e0b", "stage-outline": "#3b82f6",
+      "stage-demo": "#8b5cf6", "stage-shipped": "#10b981", "stage-archived": "#9ca3af"
+    },
+    fontFamily: { sans: ["Inter", "sans-serif"] },
+    spacing: { safe: "env(safe-area-inset-bottom)" }
+  }}
+}
+</script>
+<style>
+  * { font-family: 'Inter', sans-serif; }
+  body { background-color: #fdf8f8; color: #1c1b1c; -webkit-font-smoothing: antialiased; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; font-size: 22px; line-height:1; }
+  .shadow-ambient { box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+  .view { display: none; }
+  .view.active { display: flex; flex-direction: column; flex: 1; }
+  .pb-nav { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+  @media (min-width:768px){ .pb-nav { padding-bottom: 40px; } }
+  .no-scroll::-webkit-scrollbar { display: none; }
+  .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  /* Modal */
+  #modal-capture, #modal-idea, #modal-project-form, #modal-project-detail, #modal-prototype { display:none; position:fixed; inset:0; z-index:200; }
+  #modal-capture.open, #modal-idea.open, #modal-project-form.open, #modal-project-detail.open, #modal-prototype.open { display:flex; flex-direction:column; justify-content:flex-end; }
+  .sheet { background:#fff; border-radius:24px 24px 0 0; max-height:92vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .35s cubic-bezier(.32,.72,0,1); }
+  .open .sheet { transform:translateY(0); }
+  .sheet-full { height:93vh; border-radius:24px 24px 0 0; }
+  .backdrop { position:absolute; inset:0; background:rgba(0,0,0,0.25); backdrop-filter:blur(4px); }
+  /* Stage colors */
+  .stage-spark { color:#f59e0b; } .stage-spark-bg { background:#fef3c7; color:#92400e; }
+  .stage-outline { color:#3b82f6; } .stage-outline-bg { background:#dbeafe; color:#1e40af; }
+  .stage-demo { color:#8b5cf6; } .stage-demo-bg { background:#ede9fe; color:#5b21b6; }
+  .stage-shipped { color:#10b981; } .stage-shipped-bg { background:#d1fae5; color:#065f46; }
+  .stage-archived { color:#9ca3af; } .stage-archived-bg { background:#f3f4f6; color:#374151; }
+  /* Chips */
+  .chip { display:inline-flex; align-items:center; min-height:40px; padding:8px 15px; border-radius:999px; font-size:13px; font-weight:500; border:1px solid #e5e1e1; background:#f7f2f2; color:#5e5e5e; cursor:pointer; white-space:nowrap; transition:.15s; }
+  .chip.active { background:#000; color:#fff; border-color:#000; }
+  .chip:hover:not(.active) { background:#ece7e7; }
+  /* Cards */
+  .idea-card { background:#fff; border:1px solid #e5e1e1; border-radius:14px; padding:16px; cursor:pointer; transition:.2s; position:relative; overflow:hidden; }
+  .idea-card:hover { border-color:#c4c7c7; box-shadow:0 4px 16px rgba(0,0,0,0.06); transform:translateY(-1px); }
+  .idea-card:active { transform:scale(.98); }
+  .idea-card .stage-bar { position:absolute; left:0; top:0; bottom:0; width:3px; }
+  /* Nav */
+  .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#6b7280; cursor:pointer; background:none; border:none; padding:8px 0; transition:.15s; position:relative; }
+  .nav-btn.active { color:#000; }
+  .nav-btn.active::after { content:''; position:absolute; bottom:4px; width:4px; height:4px; border-radius:50%; background:#000; }
+  .nav-btn:hover { color:#000; }
+  /* Input */
+  .inp { width:100%; background:#f7f2f2; border:1px solid #e5e1e1; border-radius:12px; padding:12px 14px; font-size:15px; font-family:inherit; outline:none; transition:.2s; }
+  .inp:focus { border-color:#000; background:#fff; }
+  /* Buttons */
+  .btn-primary { background:#000; color:#fff; border:none; border-radius:12px; padding:14px 20px; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; transition:.15s; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-primary:active { opacity:.85; transform:scale(.98); }
+  .btn-secondary { background:#f7f2f2; color:#000; border:1px solid #e5e1e1; border-radius:12px; padding:14px 20px; font-size:15px; font-weight:500; font-family:inherit; cursor:pointer; transition:.15s; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .btn-secondary:hover { background:#ece7e7; }
+  .btn-danger { background:#fff1f2; color:#dc2626; border:1px solid #fecaca; border-radius:12px; padding:12px 16px; font-size:14px; font-weight:500; font-family:inherit; cursor:pointer; transition:.15s; width:100%; }
+  /* Toast */
+  .toast { position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px); background:#1c1b1c; color:#fff; font-size:13px; font-weight:500; padding:10px 18px; border-radius:20px; z-index:999; opacity:0; transition:.2s; pointer-events:none; white-space:nowrap; }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+  /* Pipeline bar */
+  .pipe-bar { height:4px; border-radius:4px; background:#e5e1e1; overflow:hidden; }
+  .pipe-bar-fill { height:100%; border-radius:4px; transition:width .6s ease-out; }
+  /* Proj card */
+  .proj-card { background:#fff; border:1px solid #e5e1e1; border-radius:14px; overflow:hidden; cursor:pointer; transition:.2s; }
+  .proj-card:hover { border-color:#c4c7c7; transform:translateY(-1px); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
+  .proj-card:active { transform:scale(.98); }
+  /* Toggle */
+  .view-toggle button { padding:8px 12px; min-height:40px; border-radius:8px; font-size:12px; font-weight:600; border:none; background:none; color:#6b7280; cursor:pointer; display:flex; align-items:center; gap:4px; transition:.15s; }
+  .view-toggle button.active { background:#000; color:#fff; }
+  /* Profile stat */
+  .stat-box { background:#fff; border:1px solid #e5e1e1; border-radius:14px; padding:16px; text-align:center; flex:1; }
+  /* Setup */
+  #modal-setup { display:none; position:fixed; inset:0; z-index:300; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); backdrop-filter:blur(8px); }
+  #modal-setup.open { display:flex; }
+  .setup-card { background:#fff; border-radius:24px; padding:32px 24px; width:calc(100% - 48px); max-width:360px; display:flex; flex-direction:column; align-items:center; gap:16px; text-align:center; }
+  /* Tag + status badge */
+  .tag { display:inline-block; padding:3px 9px; border-radius:8px; background:#f1eded; color:#5e5e5e; font-size:12px; font-weight:500; }
+  .status-badge { display:inline-block; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:600; white-space:nowrap; }
+  .status-badge.concept { background:#f1eded; color:#5e5e5e; }
+  .status-badge.in_progress { background:#000; color:#fff; }
+  .status-badge.completed { background:#d1fae5; color:#065f46; }
+  .status-badge.on_hold { background:#fef3c7; color:#92400e; }
+  /* Stage pill — readable tint bg + dark on-tint text (WCAG AA) */
+  .stage-pill { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; background:#f1eded; color:#374151; }
+  .stage-pill.spark    { background:#fef3c7; color:#92400e; }
+  .stage-pill.outline  { background:#dbeafe; color:#1e40af; }
+  .stage-pill.demo     { background:#ede9fe; color:#5b21b6; }
+  .stage-pill.shipped  { background:#d1fae5; color:#065f46; }
+  .stage-pill.archived { background:#f3f4f6; color:#374151; }
+  /* Emoji picker */
+  .emoji-opt { width:44px; height:44px; border-radius:12px; border:1px solid #e5e1e1; background:#f7f2f2; font-size:22px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.15s; }
+  .emoji-opt.active { border-color:#000; background:#fff; box-shadow:0 0 0 2px #000; }
+  .emoji-opt:hover { background:#ece7e7; }
+  /* Idea entrance animation */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  .anim-up { animation:fadeUp .35s ease both; }
+  /* Desktop sidebar */
+  .side-btn { display:flex; align-items:center; gap:14px; padding:10px 14px; border-radius:12px; color:#5e5e5e; font-weight:500; font-size:15px; font-family:inherit; cursor:pointer; background:none; border:none; width:100%; text-align:left; transition:.15s; }
+  .side-btn:hover { background:#f1eded; color:#000; }
+  .side-btn.active { background:#ece7e7; color:#000; font-weight:600; }
+  .side-btn .material-symbols-outlined { font-size:22px; }
+  /* Desktop modal centering */
+  @media (min-width:768px){
+    #modal-capture.open, #modal-idea.open, #modal-project-form.open, #modal-project-detail.open, #modal-prototype.open { justify-content:center; }
+    .sheet { max-width:560px; width:100%; margin:0 auto; border-radius:20px; max-height:88vh; }
+    .sheet-full { height:auto; max-height:88vh; border-radius:20px; }
+    #modal-project-detail .sheet, #modal-prototype .sheet { max-width:820px; }
+  }
+  /* Accessibility: visible keyboard focus */
+  :focus-visible { outline:2px solid #000; outline-offset:2px; border-radius:8px; }
+  .idea-card:focus-visible, .proj-card:focus-visible { outline:2px solid #000; outline-offset:2px; }
+  /* Larger tap targets for icon buttons */
+  .icon-btn-44 { width:44px; height:44px; display:flex; align-items:center; justify-content:center; }
+  .tag-rm { min-width:24px; min-height:24px; display:inline-flex; align-items:center; justify-content:center; }
+  .btn-undo { min-height:32px; padding:0 8px; }
+  /* Search input */
+  .search-wrap { display:flex; align-items:center; gap:8px; background:#f7f2f2; border:1px solid #e5e1e1; border-radius:12px; padding:0 12px; height:44px; transition:.2s; }
+  .search-wrap:focus-within { border-color:#000; background:#fff; }
+  .search-wrap input { flex:1; background:transparent; border:none; outline:none; font-size:15px; font-family:inherit; }
+  .sort-select { height:44px; border:1px solid #e5e1e1; border-radius:12px; background:#f7f2f2; padding:0 10px; font-size:13px; font-weight:500; font-family:inherit; color:#5e5e5e; cursor:pointer; outline:none; }
+  .sort-select:focus { border-color:#000; }
+  /* Active tag filter bar */
+  .active-tag-bar { display:flex; align-items:center; gap:8px; font-size:13px; }
+  /* Voice mic button */
+  .mic-btn { width:44px; height:44px; border-radius:12px; border:1px solid #e5e1e1; background:#f7f2f2; color:#5e5e5e; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.15s; flex-shrink:0; }
+  .mic-btn:hover { background:#ece7e7; }
+  .mic-btn.recording { background:#fee2e2; border-color:#fecaca; color:#dc2626; animation:micpulse 1.2s ease-in-out infinite; }
+  @keyframes micpulse { 0%,100%{ box-shadow:0 0 0 0 rgba(220,38,38,.35);} 50%{ box-shadow:0 0 0 8px rgba(220,38,38,0);} }
+  /* Image thumbs */
+  .img-thumb { position:relative; border-radius:10px; overflow:hidden; border:1px solid #e5e1e1; aspect-ratio:1; }
+  .img-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+  .img-thumb-rm { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; background:rgba(0,0,0,.6); color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:14px; line-height:1; }
+  .idea-card-img { width:100%; height:120px; object-fit:cover; border-radius:10px; margin-bottom:10px; }
+  /* Board (Kanban) */
+  .board-wrap { display:flex; gap:14px; overflow-x:auto; height:100%; padding-bottom:8px; }
+  .board-col { flex:0 0 84vw; max-width:320px; display:flex; flex-direction:column; background:#f7f2f2; border:1px solid #e5e1e1; border-radius:16px; overflow:hidden; }
+  @media (min-width:768px){ .board-col { flex:1 1 0; min-width:0; } }
+  .board-col.drop-hover { border-color:#000; background:#ece7e7; }
+  .board-col-head { display:flex; align-items:center; gap:8px; padding:12px 14px; border-bottom:1px solid #e5e1e1; font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.5px; flex-shrink:0; }
+  .board-col-body { flex:1; overflow-y:auto; padding:10px; display:flex; flex-direction:column; gap:8px; }
+  .board-card { background:#fff; border:1px solid #e5e1e1; border-radius:12px; padding:12px; cursor:grab; transition:.15s; }
+  .board-card:hover { border-color:#c4c7c7; box-shadow:0 4px 12px rgba(0,0,0,0.06); }
+  .board-card:active { cursor:grabbing; }
+  .board-card.dragging { opacity:.4; }
+  .board-move { display:flex; gap:4px; margin-top:8px; }
+  .board-move button { flex:1; min-height:32px; border:1px solid #e5e1e1; background:#f7f2f2; border-radius:8px; cursor:pointer; color:#5e5e5e; display:flex; align-items:center; justify-content:center; transition:.15s; }
+  .board-move button:hover:not(:disabled) { background:#000; color:#fff; border-color:#000; }
+  .board-move button:disabled { opacity:.3; cursor:default; }
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .anim-up { animation:none !important; }
+    .pipe-bar-fill { transition:none !important; }
+    .sheet { transition:none !important; }
+    * { scroll-behavior:auto !important; }
+  }
+
+  /* === DARK MODE === */
+  html.dark body { background-color:#0f0f1a !important; color:#e8e8f0; }
+  html.dark aside { background-color:#13132a !important; border-color:#252550 !important; }
+  html.dark nav.fixed { background-color:rgba(19,19,42,.96) !important; border-color:#252550 !important; }
+  html.dark .bg-white,
+  html.dark .stat-box,
+  html.dark .idea-card,
+  html.dark .proj-card,
+  html.dark .sheet { background-color:#1c1c3a !important; border-color:#2d2d58 !important; }
+  html.dark .bg-surface-low,
+  html.dark .bg-surface-mid { background-color:#252548 !important; }
+  html.dark .bg-surface-highest { background-color:#2d2d58 !important; }
+  html.dark .board-col { background-color:#1c1c3a !important; border-color:#2d2d58 !important; }
+  html.dark .board-card { background-color:#252548 !important; border-color:#2d2d58 !important; }
+  html.dark .board-col-head { border-color:#2d2d58 !important; }
+  html.dark .inp { background-color:#252548 !important; border-color:#3a3a68 !important; color:#e8e8f0; }
+  html.dark .inp:focus { border-color:#6366f1 !important; background-color:#1c1c3a !important; }
+  html.dark .chip { background-color:#252548 !important; border-color:#3a3a68 !important; color:#8080b0; }
+  html.dark .chip.active { background-color:#e8e8f0 !important; color:#0f0f1a !important; border-color:#e8e8f0 !important; }
+  html.dark .sort-select { background-color:#252548 !important; border-color:#3a3a68 !important; color:#8080b0; }
+  html.dark .search-wrap { background-color:#252548 !important; border-color:#3a3a68 !important; }
+  html.dark .search-wrap:focus-within { border-color:#6366f1 !important; background-color:#1c1c3a !important; }
+  html.dark .tag { background-color:#252548 !important; color:#8080b0 !important; }
+  html.dark .btn-secondary { background-color:#252548 !important; border-color:#3a3a68 !important; color:#e8e8f0 !important; }
+  html.dark .btn-danger { background-color:rgba(220,38,38,.12) !important; }
+  html.dark .emoji-opt { background-color:#252548 !important; border-color:#3a3a68 !important; }
+  html.dark .emoji-opt.active { border-color:#e8e8f0 !important; background-color:#1c1c3a !important; box-shadow:0 0 0 2px #e8e8f0 !important; }
+  html.dark .toast { background-color:#e8e8f0; color:#0f0f1a; }
+  html.dark .backdrop { background:rgba(0,0,0,.55); }
+  html.dark :focus-visible { outline-color:#6366f1; }
+  html.dark .text-secondary { color:#7878a0 !important; }
+  html.dark .text-dim { color:#55558a !important; }
+  html.dark .border-border, html.dark [class*='border-b'], html.dark [class*='border-t'] { border-color:#252550; }
+  /* Dark toggle button */
+  .dark-toggle { width:40px; height:40px; border-radius:12px; border:1px solid #e5e1e1; background:#f7f2f2; color:#5e5e5e; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:.15s; flex-shrink:0; }
+  .dark-toggle:hover { background:#ece7e7; }
+  html.dark .dark-toggle { background:#252548; border-color:#3a3a68; color:#e8e8f0; }
+  html.dark .dark-toggle:hover { background:#2d2d58; }
+  /* Activity heatmap */
+  .heatmap-grid { display:grid; grid-template-columns:repeat(56,1fr); gap:3px; }
+  .heatmap-cell { aspect-ratio:1; border-radius:3px; background:#6366f1; min-width:0; cursor:default; }
+  /* Checklist */
+  .check-item { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid #e5e1e1; }
+  .check-item:last-child { border-bottom:none; }
+  html.dark .check-item { border-color:#2d2d58; }
+  .check-item input[type=checkbox] { width:18px; height:18px; cursor:pointer; accent-color:#000; flex-shrink:0; }
+  html.dark .check-item input[type=checkbox] { accent-color:#6366f1; }
+  .check-item.done p { text-decoration:line-through; color:#9ca3af; }
+  .check-del { width:28px; height:28px; border-radius:8px; border:none; background:transparent; color:#9ca3af; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:.15s; margin-left:auto; }
+  .check-del:hover { background:#fee2e2; color:#dc2626; }
+  /* Re-spark banner */
+  .resparkRow { transition:.15s; }
+  .resparkRow:hover { background:#f7f2f2; }
+  html.dark .resparkRow:hover { background:#252548 !important; }
+</style>
+</head>
+<body class="min-h-screen bg-bg overflow-hidden">
+
+<div id="app" class="flex flex-col md:flex-row h-screen h-dvh">
+
+  <!-- DESKTOP SIDEBAR -->
+  <aside class="hidden md:flex flex-col w-60 flex-shrink-0 border-r border-border bg-surface">
+    <div class="flex items-center gap-2 px-5 h-16 border-b border-border flex-shrink-0">
+      <span class="material-symbols-outlined text-primary" style="font-variation-settings:'FILL' 1,'wght' 500">bolt</span>
+      <span class="text-xl font-bold tracking-tight">Spark</span>
+    </div>
+    <div class="p-3 flex-shrink-0">
+      <button onclick="App.openCaptureModal()" class="btn-primary w-full py-3">
+        <span class="material-symbols-outlined" style="font-size:18px">add</span> Neue Idee
+      </button>
+    </div>
+    <nav class="flex-1 px-3 flex flex-col gap-1 overflow-y-auto" aria-label="Hauptnavigation">
+      <button class="side-btn" data-view="overview"><span class="material-symbols-outlined" aria-hidden="true">home</span> Übersicht</button>
+      <button class="side-btn" data-view="ideas"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span> Ideen</button>
+      <button class="side-btn" data-view="journey"><span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span> Verlauf</button>
+      <button class="side-btn" data-view="profile"><span class="material-symbols-outlined" aria-hidden="true">person</span> Profil</button>
+    </nav>
+    <div class="p-3 border-t border-border flex-shrink-0">
+      <div class="flex items-center gap-3 px-1">
+        <div id="side-avatar" class="w-9 h-9 rounded-full bg-surface-mid flex items-center justify-center text-lg flex-shrink-0"></div>
+        <div class="min-w-0 flex-1">
+          <p id="side-name" class="text-sm font-semibold truncate">—</p>
+          <p class="text-xs text-secondary">Spark v3</p>
+        </div>
+        <button id="dark-toggle-desk" class="dark-toggle" aria-label="Dunkel/Hell umschalten" title="Dark Mode">
+          <span class="material-symbols-outlined" style="font-size:18px">dark_mode</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- OVERVIEW -->
+  <main id="view-overview" class="view active overflow-y-auto pb-nav">
+    <header class="md:hidden sticky top-0 bg-bg/90 backdrop-blur-md border-b border-border z-10 flex justify-between items-center px-4 h-14">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">bolt</span>
+        <span class="text-lg font-bold text-primary">Spark</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="overview-date" class="text-sm text-secondary"></span>
+        <button id="dark-toggle-mob" class="dark-toggle" aria-label="Dunkel/Hell umschalten">
+          <span class="material-symbols-outlined" style="font-size:18px">dark_mode</span>
+        </button>
+      </div>
+    </header>
+    <div class="px-4 md:px-10 pt-6 md:pt-10 pb-6 space-y-6 w-full max-w-[1120px] mx-auto">
+      <div>
+        <h2 class="text-4xl font-bold tracking-tight text-primary">Übersicht</h2>
+        <p class="text-secondary mt-1" id="overview-greeting"></p>
+        <p class="hidden md:block text-sm text-secondary mt-1" id="overview-date-desktop"></p>
+      </div>
+      <!-- Stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+        <div class="stat-box shadow-ambient">
+          <div class="w-9 h-9 rounded-full bg-surface-mid flex items-center justify-center mx-auto mb-3">
+            <span class="material-symbols-outlined" style="font-size:18px">lightbulb</span>
+          </div>
+          <p id="stat-ideas" class="text-4xl font-bold tracking-tight">0</p>
+          <p class="text-sm text-secondary mt-1">Ideen</p>
+        </div>
+        <div class="stat-box bg-primary text-white shadow-ambient" style="border-color:#000">
+          <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-3">
+            <span class="material-symbols-outlined text-white" style="font-size:18px">folder</span>
+          </div>
+          <p id="stat-projects" class="text-4xl font-bold tracking-tight">0</p>
+          <p class="text-sm text-white/70 mt-1">Projekte</p>
+        </div>
+      </div>
+      <!-- Activity Heatmap -->
+      <div>
+        <h3 class="text-xl font-semibold mb-3">Aktivität <span class="text-sm font-normal text-secondary">(letzte 8 Wochen)</span></h3>
+        <div class="bg-white border border-border rounded-2xl p-4 shadow-ambient">
+          <div id="activity-heatmap" class="heatmap-grid"></div>
+        </div>
+      </div>
+      <!-- Re-spark: stale ideas reminder -->
+      <div id="resparkSection" class="hidden"></div>
+      <!-- Pipeline + Recent (2-col on desktop) -->
+      <div class="grid md:grid-cols-2 gap-6 items-start">
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Pipeline</h3>
+          <div class="bg-white border border-border rounded-2xl p-4 space-y-4 shadow-ambient">
+            <div id="pipeline-rows" class="space-y-3"></div>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Zuletzt</h3>
+          <div id="recent-list" class="bg-white border border-border rounded-2xl overflow-hidden shadow-ambient"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- IDEAS -->
+  <main id="view-ideas" class="view overflow-hidden">
+    <header class="border-b border-border px-4 md:px-10 pt-4 md:pt-8 pb-0 flex-shrink-0">
+      <div class="w-full max-w-[1180px] mx-auto">
+        <div class="flex justify-between items-start mb-3">
+          <div>
+            <h2 class="text-4xl font-bold tracking-tight">Ideen</h2>
+            <p class="text-sm text-secondary mt-1"><span id="idea-count">0</span> gesamt</p>
+          </div>
+          <div class="view-toggle flex gap-1 bg-surface-mid rounded-xl p-1">
+            <button id="view-list-btn" class="active" onclick="App.setIdeaView('list')" aria-label="Listenansicht">
+              <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">view_agenda</span>
+            </button>
+            <button id="view-compact-btn" onclick="App.setIdeaView('compact')" aria-label="Kompaktansicht">
+              <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">view_list</span>
+            </button>
+            <button id="view-grid-btn" onclick="App.setIdeaView('grid')" aria-label="Rasteransicht">
+              <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">grid_view</span>
+            </button>
+            <button id="view-board-btn" onclick="App.setIdeaView('board')" aria-label="Board-Ansicht">
+              <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">view_kanban</span>
+            </button>
+          </div>
+        </div>
+        <div class="flex gap-2 mb-3">
+          <label class="search-wrap flex-1">
+            <span class="material-symbols-outlined text-dim" style="font-size:20px" aria-hidden="true">search</span>
+            <input type="search" id="idea-search" placeholder="Ideen & Tags suchen…" aria-label="Ideen suchen">
+            <button id="idea-search-clear" class="text-dim hidden" aria-label="Suche löschen"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">close</span></button>
+          </label>
+          <select id="idea-sort" class="sort-select" aria-label="Ideen sortieren">
+            <option value="newest">Neueste</option>
+            <option value="oldest">Älteste</option>
+            <option value="updated">Zuletzt bearbeitet</option>
+            <option value="stage">Nach Phase</option>
+          </select>
+        </div>
+        <div id="active-tag-bar" class="active-tag-bar hidden mb-3"></div>
+        <div id="stage-filter-row" class="flex gap-2 overflow-x-auto no-scroll pb-3 -mx-4 px-4 md:mx-0 md:px-0"></div>
+      </div>
+    </header>
+    <div id="idea-scroll" class="flex-1 overflow-y-auto px-4 md:px-10 pt-3 pb-nav">
+      <div id="idea-feed" class="w-full max-w-[1180px] mx-auto flex flex-col gap-2"></div>
+    </div>
+    <div id="idea-empty" class="hidden flex-1 flex flex-col items-center justify-center pb-nav text-center px-8">
+      <span class="material-symbols-outlined text-5xl text-dim mb-3" style="font-size:48px" aria-hidden="true">lightbulb</span>
+      <p id="idea-empty-msg" class="text-secondary mb-4">Erfasse deine erste Idee.</p>
+      <button id="idea-empty-btn" class="btn-primary px-5 py-3">
+        <span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">add</span> Neue Idee
+      </button>
+    </div>
+  </main>
+
+  <!-- JOURNEY (Projects) -->
+  <main id="view-journey" class="view overflow-hidden">
+    <header class="border-b border-border px-4 md:px-10 pt-4 md:pt-8 pb-3 flex-shrink-0">
+      <div class="w-full max-w-[1180px] mx-auto">
+        <div class="flex justify-between items-end">
+          <div>
+            <h2 class="text-4xl font-bold tracking-tight">Verlauf</h2>
+            <p class="text-sm text-secondary mt-1"><span id="proj-count">0</span> Projekte</p>
+          </div>
+          <button onclick="App.openProjectModal()" class="btn-primary py-2 px-4 text-sm rounded-xl">
+            <span class="material-symbols-outlined" style="font-size:16px">add</span> Neu
+          </button>
+        </div>
+        <div class="flex gap-2 overflow-x-auto no-scroll mt-3 -mx-4 px-4 md:mx-0 md:px-0">
+          <button class="chip active" data-status="all" onclick="App.filterProjects(this)">Alle</button>
+          <button class="chip" data-status="concept" onclick="App.filterProjects(this)">Konzept</button>
+          <button class="chip" data-status="in_progress" onclick="App.filterProjects(this)">In Arbeit</button>
+          <button class="chip" data-status="completed" onclick="App.filterProjects(this)">Fertig</button>
+          <button class="chip" data-status="on_hold" onclick="App.filterProjects(this)">Pausiert</button>
+        </div>
+      </div>
+    </header>
+    <div id="project-scroll" class="flex-1 overflow-y-auto px-4 md:px-10 pt-3 pb-nav">
+      <div id="project-grid" class="w-full max-w-[1180px] mx-auto flex flex-col gap-3 md:grid md:grid-cols-2 md:gap-4"></div>
+    </div>
+    <div id="proj-empty" class="hidden flex-1 flex flex-col items-center justify-center pb-nav text-center px-8">
+      <span class="material-symbols-outlined text-dim mb-3" style="font-size:48px" aria-hidden="true">folder</span>
+      <p id="proj-empty-msg" class="text-secondary mb-4">Noch keine Projekte.</p>
+      <button id="proj-empty-btn" class="btn-primary px-5 py-3">
+        <span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">add</span> Neues Projekt
+      </button>
+    </div>
+  </main>
+
+  <!-- PROFILE -->
+  <main id="view-profile" class="view overflow-y-auto pb-nav">
+    <header class="md:hidden border-b border-border px-4 h-14 flex items-center">
+      <h2 class="text-xl font-bold">Profil</h2>
+    </header>
+    <div class="px-4 md:px-10 py-6 md:py-10 space-y-6 w-full max-w-[680px] mx-auto">
+      <!-- Avatar + Name -->
+      <div class="flex flex-col items-center gap-3 py-4">
+        <div id="profile-avatar" class="w-20 h-20 rounded-full bg-surface-mid flex items-center justify-center text-4xl"></div>
+        <div class="text-center">
+          <p id="profile-name" class="text-xl font-bold">—</p>
+          <p id="profile-since" class="text-sm text-secondary"></p>
+        </div>
+      </div>
+      <!-- Stats -->
+      <div class="flex gap-3">
+        <div class="stat-box shadow-ambient">
+          <p id="p-stat-ideas" class="text-3xl font-bold">0</p>
+          <p class="text-xs text-secondary mt-1">Ideen</p>
+        </div>
+        <div class="stat-box shadow-ambient">
+          <p id="p-stat-projects" class="text-3xl font-bold">0</p>
+          <p class="text-xs text-secondary mt-1">Projekte</p>
+        </div>
+        <div class="stat-box shadow-ambient">
+          <p id="p-stat-shipped" class="text-3xl font-bold">0</p>
+          <p class="text-xs text-secondary mt-1">Fertig</p>
+        </div>
+      </div>
+      <!-- Settings -->
+      <div class="bg-white border border-border rounded-2xl overflow-hidden shadow-ambient">
+        <div class="px-4 py-4 border-b border-border">
+          <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Dein Name</label>
+          <input type="text" id="settings-name" class="inp" placeholder="Dein Name...">
+          <button id="btn-save-name" class="btn-primary w-full mt-3 py-3">Profil speichern</button>
+        </div>
+        <div class="px-4 py-4 border-b border-border">
+          <p class="text-xs font-semibold uppercase tracking-widest text-dim mb-3">Emoji</p>
+          <div id="emoji-grid" class="flex flex-wrap gap-2"></div>
+        </div>
+        <div class="px-4 py-4 border-b border-border space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:20px" aria-hidden="true">auto_awesome</span>
+            <p class="text-xs font-semibold uppercase tracking-widest text-dim">KI-Verbindung</p>
+          </div>
+          <div>
+            <label class="text-xs text-secondary block mb-1">API-Endpunkt (URL)</label>
+            <input type="text" id="ai-endpoint" class="inp text-sm" placeholder="https://opencode.ai/zen/v1">
+            <p class="text-[11px] text-dim mt-1">Kompatibler Endpunkt für Textgenerierung (z. B. Local, OpenCode, OpenRouter)</p>
+          </div>
+          <div>
+            <label class="text-xs text-secondary block mb-1">API-Schlüssel (falls erforderlich)</label>
+            <input type="password" id="ai-apikey" class="inp text-sm" placeholder="sk-...">
+          </div>
+          <div>
+            <label class="text-xs text-secondary block mb-1">Modellname</label>
+            <input type="text" id="ai-model" class="inp text-sm" placeholder="deepseek-v4-flash-free">
+          </div>
+          <button id="btn-save-ai" class="btn-primary w-full py-3 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined" style="font-size:18px">save</span> KI-Einstellungen speichern
+          </button>
+        </div>
+        <div class="px-4 py-4 space-y-2">
+          <p class="text-xs font-semibold uppercase tracking-widest text-dim mb-3">Daten</p>
+          <button id="btn-export" class="btn-secondary w-full py-3">
+            <span class="material-symbols-outlined" style="font-size:16px">upload</span> JSON exportieren
+          </button>
+          <button id="btn-import" class="btn-secondary w-full py-3">
+            <span class="material-symbols-outlined" style="font-size:16px">download</span> JSON importieren
+          </button>
+          <input type="file" id="import-file-input" accept=".json,application/json" class="hidden">
+          <button id="btn-clear" class="btn-danger">
+            <span class="material-symbols-outlined" style="font-size:16px">delete</span> Alle Daten löschen
+          </button>
+        </div>
+      </div>
+      <div class="text-center py-4">
+        <p class="text-4xl mb-2">⚡</p>
+        <p class="font-bold text-lg">Spark</p>
+        <p class="text-sm text-secondary">v3.0 · Apple-Ästhetik</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV (mobile only) -->
+  <nav class="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-bg/90 backdrop-blur-xl border-t border-border flex items-stretch" aria-label="Hauptnavigation"
+       style="height:calc(64px + env(safe-area-inset-bottom)); padding-bottom:env(safe-area-inset-bottom)">
+    <button class="nav-btn active" data-view="overview" aria-label="Übersicht">
+      <span class="material-symbols-outlined" aria-hidden="true">home</span>
+    </button>
+    <button class="nav-btn" data-view="ideas" aria-label="Ideen">
+      <span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>
+    </button>
+    <button id="btn-quick-add" class="flex-1 flex items-center justify-center" aria-label="Neue Idee erfassen">
+      <div class="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center shadow-lg" style="box-shadow:0 4px 16px rgba(0,0,0,0.25)">
+        <span class="material-symbols-outlined text-white" style="font-size:24px;font-variation-settings:'FILL' 0,'wght' 400" aria-hidden="true">add</span>
+      </div>
+    </button>
+    <button class="nav-btn" data-view="journey" aria-label="Verlauf">
+      <span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span>
+    </button>
+    <button class="nav-btn" data-view="profile" aria-label="Profil">
+      <span class="material-symbols-outlined" aria-hidden="true">person</span>
+    </button>
+  </nav>
+
+</div><!-- #app -->
+
+<!-- MODAL: Quick Capture -->
+<div id="modal-capture">
+  <div class="backdrop"></div>
+  <div class="sheet relative z-10" role="dialog" aria-modal="true" aria-labelledby="capture-title">
+    <div class="w-10 h-1 bg-border-mid rounded-full mx-auto mt-3 mb-2 flex-shrink-0"></div>
+    <div class="flex justify-between items-center px-5 pb-3 flex-shrink-0">
+      <h3 id="capture-title" class="text-2xl font-bold">Neue Idee</h3>
+      <button class="icon-btn-44 rounded-full bg-surface-mid text-secondary modal-close" data-modal="modal-capture" aria-label="Schließen">
+        <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">close</span>
+      </button>
+    </div>
+    <div class="overflow-y-auto px-5 pb-6 space-y-4">
+      <textarea id="capture-text" class="w-full bg-transparent border-none outline-none text-2xl font-medium resize-none text-primary placeholder:text-dim" rows="4" placeholder="Was funkt gerade?"></textarea>
+      <!-- Capture toolbar: voice + image + AI -->
+      <div class="flex items-center gap-2">
+        <button id="btn-voice" class="mic-btn" aria-label="Idee diktieren" title="Diktieren (Sprache zu Text)">
+          <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">mic</span>
+        </button>
+        <button id="btn-add-image" class="mic-btn" aria-label="Bild anhängen" title="Bild anhängen">
+          <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">image</span>
+        </button>
+        <button id="btn-ai-capture" class="mic-btn text-primary" aria-label="KI-Assistent" title="KI-Gliederung &amp; Vorschläge">
+          <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">auto_awesome</span>
+        </button>
+        <button id="btn-cap-top-prototype" class="px-3 py-2 text-xs font-semibold bg-surface border border-border text-primary rounded-xl flex items-center gap-1.5 hover:bg-surface-mid transition-colors ml-auto" title="UI-Prototyp direkt aus Idee generieren">
+          <span class="material-symbols-outlined" style="font-size:16px">view_quilt</span> 📐 UI-Prototyp
+        </button>
+        <input type="file" id="capture-image-input" accept="image/*" multiple class="hidden">
+        <span id="voice-hint" class="text-xs text-dim"></span>
+      </div>
+
+      <!-- KI-Assistent Workspace in Quick Capture -->
+      <div class="border border-border bg-surface-mid rounded-2xl p-4 space-y-3 shadow-ambient">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:20px" aria-hidden="true">auto_awesome</span>
+            <span class="text-sm font-bold text-primary">KI-Assistent &amp; Feinschliff</span>
+          </div>
+          <button id="btn-clear-capture-ai" class="text-xs text-secondary hover:text-red-500 hidden">Verlauf löschen</button>
+        </div>
+
+        <div id="capture-ai-chat-messages" class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+          <div class="p-3 text-center text-xs text-dim border border-dashed border-border rounded-xl">
+            Tippe oben eine Idee ein und frage den KI-Assistenten nach Überarbeitungen oder Gliederungen.
+          </div>
+        </div>
+
+        <!-- Quick Prompts Chips -->
+        <div class="flex flex-wrap gap-1.5 pt-1">
+          <button id="btn-cap-chip-prototype" class="chip text-xs bg-primary text-on-primary font-semibold flex items-center gap-1"><span class="material-symbols-outlined" style="font-size:14px">view_quilt</span> 📐 UI-Prototyp generieren</button>
+          <button class="cap-ai-chip chip text-xs bg-surface border-border text-primary" data-prompt="Erstelle eine 3-Schritte-Gliederung für diese Idee">3-Schritte-Gliederung</button>
+          <button class="cap-ai-chip chip text-xs bg-surface border-border text-primary" data-prompt="Schlage 3 kreative Funktionen vor">Funktionsvorschläge</button>
+          <button class="cap-ai-chip chip text-xs bg-surface border-border text-primary" data-prompt="Formuliere die Idee prägnant und kompakt">Kompakt fassen</button>
+          <button class="cap-ai-chip chip text-xs bg-surface border-border text-primary" data-prompt="Analysiere die Zielgruppe und den Mehrwert">Zielgruppen-Analyse</button>
+        </div>
+
+        <!-- Input Row -->
+        <div class="flex items-center gap-2 pt-1">
+          <input type="text" id="capture-ai-chat-input" class="inp text-sm flex-1" placeholder="Anweisung oder Überarbeitung eingeben..." aria-label="KI-Anweisung">
+          <button id="btn-send-capture-ai-chat" class="btn-primary py-2.5 px-4 text-sm flex items-center gap-1.5 flex-shrink-0">
+            <span>Senden</span>
+            <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">send</span>
+          </button>
+        </div>
+      </div>
+      <div id="capture-images" class="grid grid-cols-3 gap-2"></div>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-widest text-dim mb-2">Phase</p>
+        <div class="flex gap-2 overflow-x-auto no-scroll pb-1 -mx-5 px-5" id="capture-stage-row">
+          <button class="chip active" data-stage="spark"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">bolt</span> Funke</button>
+          <button class="chip" data-stage="outline"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">edit_note</span> Entwurf</button>
+          <button class="chip" data-stage="demo"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">build</span> Demo</button>
+          <button class="chip" data-stage="shipped"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">check_circle</span> Fertig</button>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 bg-surface-mid border border-border rounded-xl px-3 py-3">
+        <span class="material-symbols-outlined text-dim" style="font-size:18px" aria-hidden="true">sell</span>
+        <input type="text" id="capture-tag-input" class="bg-transparent flex-1 outline-none text-sm placeholder:text-dim" placeholder="Tags hinzufügen (Enter)..." aria-label="Tags hinzufügen">
+      </div>
+      <div id="capture-tags" class="flex flex-wrap gap-2"></div>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-save-add" class="btn-secondary py-4">Speichern &amp; weiter</button>
+        <button id="btn-save-idea" class="btn-primary py-4">Erfassen</button>
+      </div>
+      <p class="text-xs text-dim text-center">Enter zum Speichern &amp; Weitermachen · ⌘/Strg+Enter zum Abschließen · Umschalt+Enter für Zeilenumbruch</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Idea Detail -->
+<div id="modal-idea">
+  <div class="backdrop"></div>
+  <div class="sheet sheet-full relative z-10" role="dialog" aria-modal="true" aria-labelledby="idea-modal-title">
+    <div class="w-10 h-1 bg-border-mid rounded-full mx-auto mt-3 mb-2 flex-shrink-0"></div>
+    <div class="flex justify-between items-center px-5 pb-3 border-b border-border flex-shrink-0">
+      <h3 class="text-xl font-bold" id="idea-modal-title">Idee</h3>
+      <button class="icon-btn-44 rounded-full bg-surface-mid text-secondary modal-close" data-modal="modal-idea" aria-label="Schließen">
+        <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">close</span>
+      </button>
+    </div>
+    <div id="idea-modal-body" class="overflow-y-auto flex-1 px-5 py-4"></div>
+  </div>
+</div>
+
+<!-- MODAL: Project Form -->
+<div id="modal-project-form">
+  <div class="backdrop"></div>
+  <div class="sheet sheet-full relative z-10" role="dialog" aria-modal="true" aria-labelledby="proj-form-title">
+    <div class="w-10 h-1 bg-border-mid rounded-full mx-auto mt-3 mb-2 flex-shrink-0"></div>
+    <div class="flex justify-between items-center px-5 pb-3 border-b border-border flex-shrink-0">
+      <h3 class="text-xl font-bold" id="proj-form-title">Neues Projekt</h3>
+      <button class="icon-btn-44 rounded-full bg-surface-mid text-secondary modal-close" data-modal="modal-project-form" aria-label="Schließen">
+        <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">close</span>
+      </button>
+    </div>
+    <div class="overflow-y-auto flex-1 px-5 py-4 space-y-4">
+      <input type="hidden" id="proj-edit-id">
+      <div>
+        <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Projektname *</label>
+        <input type="text" id="proj-name" class="inp" placeholder="Mein tolles Projekt...">
+      </div>
+      <div>
+        <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Beschreibung</label>
+        <textarea id="proj-desc" class="inp" rows="3" placeholder="Worum geht es..."></textarea>
+      </div>
+      <div>
+        <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Status</label>
+        <div class="flex flex-wrap gap-2" id="proj-status-row">
+          <button class="chip active" data-status="concept"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">lightbulb</span> Konzept</button>
+          <button class="chip" data-status="in_progress"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">rocket_launch</span> In Arbeit</button>
+          <button class="chip" data-status="completed"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">check_circle</span> Fertig</button>
+          <button class="chip" data-status="on_hold"><span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle" aria-hidden="true">pause_circle</span> Pausiert</button>
+        </div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Tags</label>
+        <input type="text" id="proj-tag-input" class="inp" placeholder="Tags hinzufügen (Enter)...">
+        <div id="proj-tags" class="flex flex-wrap gap-2 mt-2"></div>
+      </div>
+      <div>
+        <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Link</label>
+        <input type="url" id="proj-link" class="inp" placeholder="https://...">
+      </div>
+      <button id="btn-save-project" class="btn-primary w-full py-4">Projekt speichern</button>
+      <div style="height:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Project Detail -->
+<div id="modal-project-detail">
+  <div class="backdrop"></div>
+  <div class="sheet sheet-full relative z-10" role="dialog" aria-modal="true" aria-label="Projektdetails">
+    <div id="proj-detail-inner" class="overflow-y-auto flex-1"></div>
+  </div>
+</div>
+
+<!-- MODAL: UI Prototype Generator & Viewer -->
+<div id="modal-prototype">
+  <div class="backdrop"></div>
+  <div class="sheet sheet-full relative z-10" role="dialog" aria-modal="true" aria-labelledby="prototype-modal-title">
+    <div class="w-10 h-1 bg-border-mid rounded-full mx-auto mt-3 mb-2 flex-shrink-0"></div>
+    <div class="flex justify-between items-center px-5 pb-3 border-b border-border flex-shrink-0">
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary" style="font-size:22px" aria-hidden="true">view_quilt</span>
+        <div>
+          <h3 class="text-lg font-bold" id="prototype-modal-title">UI-Prototyp &amp; Live-Vorschau</h3>
+          <p class="text-xs text-secondary" id="prototype-modal-subtitle">Spezifikation &amp; Interaktives Interface</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btn-save-prototype" class="btn-primary py-2 px-3.5 text-xs flex items-center gap-1.5">
+          <span class="material-symbols-outlined" style="font-size:16px">save</span>
+          <span>Speichern</span>
+        </button>
+        <button class="icon-btn-44 rounded-full bg-surface-mid text-secondary modal-close" data-modal="modal-prototype" aria-label="Schließen">
+          <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">close</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Modal Body -->
+    <div class="flex-1 flex flex-col overflow-hidden p-4 space-y-3">
+      <!-- Controls / Prompt Input Bar -->
+      <div class="bg-surface-mid border border-border rounded-xl p-3 flex flex-col md:flex-row items-stretch md:items-center gap-2 flex-shrink-0">
+        <input type="text" id="prototype-prompt-inp" class="inp text-sm flex-1" placeholder="z. B. Dashboard mit Statistik-Cards und Aktivitätsleiste generieren..." aria-label="UI-Anweisung">
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button id="btn-generate-prototype-ai" class="btn-primary py-2 px-3.5 text-xs flex items-center gap-1.5">
+            <span class="material-symbols-outlined" style="font-size:16px">auto_awesome</span>
+            <span>UI Generieren</span>
+          </button>
+          <button id="btn-copy-prototype-code" class="btn-secondary py-2 px-3 text-xs flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size:16px">content_copy</span>
+            <span>Code kopieren</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Switchers -->
+      <div class="flex border-b border-border flex-shrink-0">
+        <button id="tab-proto-preview" class="py-2 px-4 text-xs font-bold text-primary border-b-2 border-primary">Live-Vorschau</button>
+        <button id="tab-proto-code" class="py-2 px-4 text-xs font-medium text-secondary">HTML / CSS Code</button>
+      </div>
+
+      <!-- Tab Content 1: Live Preview iframe -->
+      <div id="proto-preview-view" class="flex-1 bg-surface border border-border rounded-xl overflow-hidden relative min-h-[380px]">
+        <iframe id="prototype-iframe" class="w-full h-full border-0 bg-white" title="UI Prototyp Vorschau"></iframe>
+        <div id="prototype-loading" class="absolute inset-0 bg-surface/90 flex flex-col items-center justify-center gap-2 hidden">
+          <span class="material-symbols-outlined animate-spin text-primary" style="font-size:32px">progress_activity</span>
+          <p class="text-xs text-secondary font-medium">KI erstellt den UI-Prototyp...</p>
+        </div>
+      </div>
+
+      <!-- Tab Content 2: HTML/CSS Code Inspector -->
+      <div id="proto-code-view" class="flex-1 bg-surface-high border border-border rounded-xl p-3 overflow-y-auto hidden">
+        <textarea id="prototype-code-inp" class="w-full h-full min-h-[360px] bg-transparent text-xs font-mono leading-relaxed text-primary border-0 focus:outline-none resize-none" placeholder="HTML/CSS Code wird hier angezeigt..."></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Setup Modal -->
+<div id="modal-setup">
+  <div class="setup-card">
+    <div class="text-5xl">⚡</div>
+    <h2 class="text-2xl font-bold">Willkommen bei Spark</h2>
+    <p class="text-secondary text-sm">Wähle dein Emoji und gib deinen Namen ein.</p>
+    <div id="setup-emoji-row" class="flex flex-wrap justify-center gap-2"></div>
+    <input type="text" id="setup-name" class="inp text-center text-lg font-semibold" placeholder="Dein Name...">
+    <button id="btn-setup-save" class="btn-primary w-full py-4">Los geht's →</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<script src="js/data.js?v=16"></script>
+<script src="js/app.js?v=16"></script>
+</body>
+</html>

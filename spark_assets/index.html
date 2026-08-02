@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Spark">
+  <meta name="theme-color" content="#08080f">
+  <meta name="description" content="Capture ideas & showcase your projects">
+  <title>Spark — Ideas & Projects</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ── VIEWS ── -->
+
+  <!-- MY IDEAS -->
+  <main id="view-ideas" class="view active">
+    <header class="view-header">
+      <div class="header-left">
+        <h1>My Ideas</h1>
+        <span id="idea-count" class="count-badge">0</span>
+      </div>
+      <button id="btn-pin-filter" class="icon-btn" title="Show pinned">📌</button>
+    </header>
+    <div id="idea-tag-filter" class="tag-filter-row"></div>
+    <!-- Stage filter -->
+    <div id="idea-stage-filter" class="stage-filter-row">
+      <button class="stage-chip active" data-stage="">All</button>
+      <button class="stage-chip" data-stage="raw">💭 Raw</button>
+      <button class="stage-chip" data-stage="exploring">🔍 Exploring</button>
+      <button class="stage-chip" data-stage="in_progress">🚀 In Progress</button>
+      <button class="stage-chip" data-stage="shipped">✅ Shipped</button>
+      <button class="stage-chip" data-stage="dropped">🗄️ Dropped</button>
+    </div>
+    <div id="idea-feed" class="feed"></div>
+    <div id="idea-empty" class="empty-state hidden">
+      <div class="empty-icon">💡</div>
+      <p>No ideas yet.<br>Tap <strong>+</strong> to capture one!</p>
+    </div>
+  </main>
+
+  <!-- BOARD -->
+  <main id="view-board" class="view">
+    <header class="view-header">
+      <div class="header-left">
+        <h1>Board</h1>
+        <span id="board-count" class="count-badge">0</span>
+      </div>
+      <button id="btn-board-sort" class="icon-btn" title="Sort">🔥</button>
+    </header>
+    <div class="board-tabs-row">
+      <button class="board-tab active" data-sort="hot">🔥 Hot</button>
+      <button class="board-tab" data-sort="new">✨ New</button>
+      <button class="board-tab" data-sort="claimed">🙋 Claimed</button>
+    </div>
+    <div id="board-feed" class="feed"></div>
+    <div id="board-empty" class="empty-state hidden">
+      <div class="empty-icon">🌐</div>
+      <p>No ideas on the board yet.<br>Be the first to propose one!</p>
+    </div>
+    <button id="btn-post-board" class="fab-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Đề xuất Idea
+    </button>
+  </main>
+
+  <!-- PROJECTS -->
+  <main id="view-projects" class="view">
+    <header class="view-header">
+      <div class="header-left">
+        <h1>Projects</h1>
+        <span id="proj-count" class="count-badge">0</span>
+      </div>
+      <select id="proj-status-filter" class="filter-select">
+        <option value="all">All</option>
+        <option value="concept">Concept</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Done</option>
+        <option value="on_hold">On Hold</option>
+      </select>
+    </header>
+    <div id="project-grid" class="project-grid"></div>
+    <div id="proj-empty" class="empty-state hidden">
+      <div class="empty-icon">🗂️</div>
+      <p>No projects yet.<br>Convert an idea or tap <strong>+</strong>!</p>
+    </div>
+  </main>
+
+  <!-- SEARCH -->
+  <main id="view-search" class="view">
+    <header class="view-header"><h1>Search</h1></header>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="search" id="search-input" placeholder="Search ideas, board & projects..." autocomplete="off" autocorrect="off">
+    </div>
+    <div id="search-results" class="feed"></div>
+    <div id="search-empty" class="empty-state hidden">
+      <div class="empty-icon">🔍</div>
+      <p>No results found.</p>
+    </div>
+  </main>
+
+  <!-- SETTINGS -->
+  <main id="view-settings" class="view">
+    <header class="view-header"><h1>Settings</h1></header>
+    <div class="settings-body">
+      <div class="settings-card">
+        <h3>Your Identity</h3>
+        <p class="settings-hint">Your name and emoji appear on ideas & comments.</p>
+        <div class="emoji-picker-row" id="emoji-picker-row"></div>
+        <input type="text" id="settings-name" placeholder="Enter your name..." class="settings-input">
+        <button id="btn-save-name" class="btn-primary">Save Profile</button>
+      </div>
+      <div class="settings-card">
+        <h3>Data</h3>
+        <p class="settings-hint">All data stored locally on this device.</p>
+        <button id="btn-export" class="btn-outline">⬆️ Export JSON</button>
+        <button id="btn-clear-data" class="btn-danger">🗑️ Clear All Data</button>
+      </div>
+      <div class="settings-card settings-about">
+        <div class="spark-logo">⚡</div>
+        <h3>Spark</h3>
+        <p>v2.0 · Ideas & Projects</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- ── BOTTOM NAV ── -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-view="ideas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 0 1 7 7c0 2.5-1.3 4.7-3.2 6l-.8.6V18H9v-2.4l-.8-.6A7 7 0 0 1 5 9a7 7 0 0 1 7-7z"/><line x1="9" y1="21" x2="15" y2="21"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+      <span>Ideas</span>
+    </button>
+    <button class="nav-btn" data-view="board">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>Board</span>
+    </button>
+    <button id="btn-quick-add" class="nav-btn nav-center-btn" aria-label="Quick add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button class="nav-btn" data-view="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>Search</span>
+    </button>
+    <button class="nav-btn" data-view="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span>Settings</span>
+    </button>
+  </nav>
+
+</div><!-- #app -->
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Quick Capture -->
+<div id="modal-capture" class="modal" role="dialog" aria-modal="true" aria-label="New Idea">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2>New Idea ⚡</h2>
+      <button class="btn-close modal-close" data-modal="modal-capture">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="capture-ta-wrap">
+        <textarea id="capture-text" placeholder="What's on your mind..." rows="5"></textarea>
+        <button id="btn-voice" class="voice-btn" aria-label="Voice input">🎙️</button>
+      </div>
+      <div class="color-picker-row">
+        <span class="cpick-label">Color:</span>
+        <div id="capture-colors" class="color-dots">
+          <button class="color-dot cdot-none active" data-color="">·</button>
+          <button class="color-dot" data-color="red" style="background:#ef4444"></button>
+          <button class="color-dot" data-color="orange" style="background:#f97316"></button>
+          <button class="color-dot" data-color="yellow" style="background:#eab308"></button>
+          <button class="color-dot" data-color="green" style="background:#22c55e"></button>
+          <button class="color-dot" data-color="blue" style="background:#3b82f6"></button>
+          <button class="color-dot" data-color="purple" style="background:#a855f7"></button>
+        </div>
+      </div>
+      <div class="tag-input-row">
+        <input type="text" id="capture-tag-input" placeholder="+ Add tag, press Enter" autocomplete="off">
+      </div>
+      <div id="capture-tags" class="tags-row"></div>
+      <div class="capture-actions">
+        <button id="btn-save-idea" class="btn-primary">💾 Save Idea</button>
+        <button id="btn-to-project" class="btn-secondary">🗂️ As Project</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Idea Detail (with Timeline tabs) -->
+<div id="modal-idea" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet modal-sheet--tall">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 id="idea-modal-title">Idea</h2>
+      <button class="btn-close modal-close" data-modal="modal-idea">✕</button>
+    </div>
+    <!-- Tab Bar -->
+    <div class="idea-modal-tabs">
+      <button class="idea-tab active" data-tab="detail">📝 Detail</button>
+      <button class="idea-tab" data-tab="timeline">📅 Timeline</button>
+    </div>
+    <div id="idea-detail-body" class="sheet-body"></div>
+    <div id="idea-timeline-body" class="sheet-body hidden"></div>
+  </div>
+</div>
+
+<!-- Board Idea Detail -->
+<div id="modal-board-detail" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet modal-sheet--tall">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2>Community Idea</h2>
+      <button class="btn-close modal-close" data-modal="modal-board-detail">✕</button>
+    </div>
+    <div id="board-detail-body" class="sheet-body"></div>
+  </div>
+</div>
+
+<!-- Post to Board -->
+<div id="modal-board-post" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2>Đề xuất Idea 🌐</h2>
+      <button class="btn-close modal-close" data-modal="modal-board-post">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="form-group">
+        <label>Tiêu đề *</label>
+        <input type="text" id="board-post-title" placeholder="Tên ý tưởng ngắn gọn...">
+      </div>
+      <div class="form-group">
+        <label>Mô tả</label>
+        <textarea id="board-post-desc" rows="4" placeholder="Chi tiết về ý tưởng này..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Tags</label>
+        <input type="text" id="board-post-tag-input" placeholder="+ Add tag, press Enter" autocomplete="off">
+        <div id="board-post-tags" class="tags-row"></div>
+      </div>
+      <button id="btn-submit-board" class="btn-primary btn-full">🌐 Post to Board</button>
+      <div style="height:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Project Form -->
+<div id="modal-proj-form" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet modal-sheet--full">
+    <div class="sheet-handle"></div>
+    <div class="sheet-header">
+      <h2 id="proj-form-title">New Project</h2>
+      <button class="btn-close modal-close" data-modal="modal-proj-form">✕</button>
+    </div>
+    <div class="sheet-body sheet-body--scroll">
+      <form id="project-form" novalidate>
+        <input type="hidden" id="proj-edit-id">
+        <div class="form-group">
+          <label for="proj-name">Project Name *</label>
+          <input type="text" id="proj-name" placeholder="My awesome project..." required>
+        </div>
+        <div class="form-group">
+          <label for="proj-desc">Description</label>
+          <textarea id="proj-desc" placeholder="What is this about..." rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <div id="proj-status-btns" class="status-toggle">
+            <button type="button" class="status-opt active" data-s="concept">💡 Concept</button>
+            <button type="button" class="status-opt" data-s="in_progress">🚀 In Progress</button>
+            <button type="button" class="status-opt" data-s="completed">✅ Done</button>
+            <button type="button" class="status-opt" data-s="on_hold">⏸ On Hold</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Tags</label>
+          <input type="text" id="proj-tag-input" placeholder="+ Add tag, press Enter" autocomplete="off">
+          <div id="proj-tags" class="tags-row"></div>
+        </div>
+        <div class="form-group">
+          <label>Cover Image</label>
+          <div class="upload-zone" id="cover-zone">
+            <input type="file" id="proj-cover" accept="image/*" hidden>
+            <div id="cover-placeholder" class="upload-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <span>Tap to upload cover</span>
+            </div>
+            <img id="cover-preview" class="upload-preview" hidden alt="Cover preview">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Gallery</label>
+          <button type="button" id="btn-add-gallery" class="btn-outline">📷 Add Images</button>
+          <input type="file" id="proj-gallery" accept="image/*" multiple hidden>
+          <div id="gallery-row" class="gallery-thumbs"></div>
+        </div>
+        <div class="form-group">
+          <label for="proj-link">Link (optional)</label>
+          <input type="url" id="proj-link" placeholder="https://...">
+        </div>
+        <button type="submit" class="btn-primary btn-full">Save Project</button>
+        <div style="height:8px"></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Project Detail -->
+<div id="modal-proj-detail" class="modal" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-sheet modal-sheet--full">
+    <div id="proj-detail-inner" class="proj-detail-inner"></div>
+  </div>
+</div>
+
+<!-- User Setup (first launch) -->
+<div id="modal-setup" class="modal modal--center" role="dialog" aria-modal="true">
+  <div class="modal-backdrop"></div>
+  <div class="setup-card">
+    <div class="setup-logo">⚡</div>
+    <h2>Welcome to Spark</h2>
+    <p>Pick your emoji and enter your name.<br>It'll appear on ideas & comments.</p>
+    <div class="setup-emoji-row" id="setup-emoji-row"></div>
+    <input type="text" id="setup-name" placeholder="Your name..." autocomplete="name" autocorrect="off">
+    <button id="btn-setup-save" class="btn-primary btn-full">Let's Go →</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

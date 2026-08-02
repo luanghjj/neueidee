@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ideas - Spark</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f4f0f0",
+                        "on-error-container": "#93000a",
+                        "background": "#fdf8f8",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#e4e2e2",
+                        "tertiary-container": "#1c1b1b",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c4c7c7",
+                        "secondary-fixed-dim": "#c7c6c6",
+                        "outline": "#747878",
+                        "on-secondary-fixed-variant": "#464747",
+                        "surface-tint": "#5f5e5e",
+                        "primary": "#000000",
+                        "secondary": "#5e5e5e",
+                        "surface-container-highest": "#e6e1e1",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#484646",
+                        "surface-container-low": "#f7f2f2",
+                        "on-tertiary-container": "#858383",
+                        "surface-variant": "#e6e1e1",
+                        "on-primary-container": "#858383",
+                        "inverse-primary": "#c9c6c5",
+                        "surface-container-high": "#ece7e7",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "surface": "#fdf8f8",
+                        "tertiary-fixed-dim": "#c9c6c5",
+                        "surface-dim": "#ddd9d9",
+                        "on-secondary-container": "#626262",
+                        "primary-fixed-dim": "#c9c6c5",
+                        "surface-container": "#f1eded",
+                        "on-background": "#1c1b1c",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary-container": "#1c1b1b",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-bright": "#fdf8f8",
+                        "on-surface-variant": "#444748",
+                        "on-tertiary-fixed-variant": "#484646",
+                        "secondary-container": "#e1dfdf",
+                        "on-surface": "#1c1b1c",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "base": "8px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "margin-desktop": "64px",
+                        "xl": "80px",
+                        "xs": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { background-color: #fdf8f8; color: #1c1b1c; -webkit-font-smoothing: antialiased; }
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-safe pb-24 md:pb-0">
+<!-- TopAppBar (Mobile & Desktop) -->
+<header class="fixed top-0 w-full bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline z-50">
+<div class="flex justify-between items-center px-margin-mobile md:px-margin-desktop h-16 w-full max-w-[1280px] mx-auto">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed" style="font-variation-settings: 'FILL' 0;">bolt</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg font-bold text-primary dark:text-primary-fixed">Spark</h1>
+</div>
+<!-- Desktop Nav (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-md">
+<a class="font-label-md text-label-md text-secondary hover:opacity-80 transition-opacity duration-200" href="#">Home</a>
+<a class="font-label-md text-label-md text-secondary hover:opacity-80 transition-opacity duration-200" href="#">Search</a>
+<a class="font-label-md text-label-md text-primary dark:text-primary-fixed relative after:content-['\2022'] after:absolute after:-bottom-2 after:left-1/2 after:-translate-x-1/2 after:text-[10px]" href="#">Ideas</a>
+<a class="font-label-md text-label-md text-secondary hover:opacity-80 transition-opacity duration-200" href="#">Profile</a>
+</nav>
+<button class="hover:opacity-80 transition-opacity duration-200 text-primary dark:text-primary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">calendar_today</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-24 px-margin-mobile md:px-margin-desktop max-w-[1280px] mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-lg gap-md">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary mb-xs">Ideas</h2>
+<p class="font-body-md text-body-md text-secondary">42 total projects in the pipeline.</p>
+</div>
+<div class="flex items-center gap-sm self-stretch md:self-auto">
+<div class="flex bg-surface-container-low rounded p-1 border border-outline-variant flex-1 md:flex-none">
+<button class="flex-1 md:flex-none px-4 py-1 rounded bg-primary text-on-primary font-label-sm text-label-sm shadow-sm transition-all duration-200">
+<span class="material-symbols-outlined text-[18px] align-middle mr-1">grid_view</span>Grid
+                    </button>
+<button class="flex-1 md:flex-none px-4 py-1 rounded text-secondary hover:bg-surface-variant font-label-sm text-label-sm transition-all duration-200">
+<span class="material-symbols-outlined text-[18px] align-middle mr-1">view_list</span>List
+                    </button>
+</div>
+<button class="bg-primary text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span> New Idea
+                </button>
+</div>
+</div>
+<!-- Filters -->
+<div class="flex overflow-x-auto pb-4 mb-md gap-sm scrollbar-hide -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
+<button class="shrink-0 px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md">All Stages</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md hover:bg-surface-variant transition-colors">Spark (12)</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md hover:bg-surface-variant transition-colors">Outline (8)</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md hover:bg-surface-variant transition-colors">Demo (15)</button>
+<button class="shrink-0 px-4 py-2 rounded-full bg-surface-container-low text-on-surface border border-outline-variant font-label-md text-label-md hover:bg-surface-variant transition-colors">Shipped (7)</button>
+</div>
+<!-- Ideas Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Card 1: Spark -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md relative overflow-hidden ambient-shadow hover:shadow-none transition-shadow group cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#d1d5db]"></div> <!-- Spark Gray Indicator -->
+<div class="flex justify-between items-start mb-sm pl-2">
+<span class="px-2 py-1 rounded bg-[#f3f4f6] text-[#4b5563] font-label-sm text-label-sm uppercase tracking-wider">Spark</span>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2 pl-2 group-hover:underline decoration-1 underline-offset-4">Project Atlas</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 pl-2 mb-md">A comprehensive design system overhaul focusing on essentialism and high-contrast accessibility.</p>
+<div class="pl-2 flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center text-xs font-bold text-secondary">JD</div>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Updated 2h ago</span>
+</div>
+</div>
+<!-- Card 2: Demo -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md relative overflow-hidden ambient-shadow hover:shadow-none transition-shadow group cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div> <!-- Demo Black Indicator -->
+<div class="flex justify-between items-start mb-sm pl-2">
+<span class="px-2 py-1 rounded bg-surface-container-high text-primary font-label-sm text-label-sm uppercase tracking-wider font-bold">Demo</span>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2 pl-2 group-hover:underline decoration-1 underline-offset-4">Workflow Engine v2</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 pl-2 mb-md">Refactoring the core automation engine to support parallel execution and visual node debugging.</p>
+<div class="pl-2 flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center text-xs font-bold text-secondary">AM</div>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center text-xs font-bold text-secondary">RK</div>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Updated 1d ago</span>
+</div>
+</div>
+<!-- Card 3: Outline -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md relative overflow-hidden ambient-shadow hover:shadow-none transition-shadow group cursor-pointer">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#9ca3af]"></div> <!-- Outline Indicator -->
+<div class="flex justify-between items-start mb-sm pl-2">
+<span class="px-2 py-1 rounded bg-[#f3f4f6] text-[#4b5563] font-label-sm text-label-sm uppercase tracking-wider">Outline</span>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2 pl-2 group-hover:underline decoration-1 underline-offset-4">Mobile Dashboard</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 pl-2 mb-md">Translating desktop analytics into a concise, gesture-driven mobile experience.</p>
+<div class="pl-2 flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center text-xs font-bold text-secondary">TS</div>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Updated 3d ago</span>
+</div>
+</div>
+<!-- Card 4: Shipped -->
+<div class="bg-surface rounded-xl border border-outline-variant p-md relative overflow-hidden ambient-shadow hover:shadow-none transition-shadow group cursor-pointer opacity-80">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#6b7280]"></div>
+<div class="flex justify-between items-start mb-sm pl-2">
+<span class="px-2 py-1 rounded bg-[#e5e7eb] text-[#374151] font-label-sm text-label-sm uppercase tracking-wider flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Shipped
+                    </span>
+<button class="text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<h3 class="font-headline-md text-headline-md text-primary mb-2 pl-2 group-hover:underline decoration-1 underline-offset-4 line-through decoration-outline">Client Portal</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 pl-2 mb-md">Self-service portal for enterprise clients to manage billing and API keys.</p>
+<div class="pl-2 flex items-center justify-between mt-auto">
+<div class="flex -space-x-2">
+<div class="w-8 h-8 rounded-full bg-surface-container-high border-2 border-surface flex items-center justify-center text-xs font-bold text-secondary">JD</div>
+</div>
+<span class="font-label-sm text-label-sm text-outline">Shipped last week</span>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md rounded-t-xl border-t border-outline-variant dark:border-outline shadow-sm md:hidden">
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">search</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">add</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full relative after:content-['\2022'] after:absolute after:-bottom-1 after:text-[10px] text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">folder</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">person</span>
+</a>
+</nav>
+</body></html>

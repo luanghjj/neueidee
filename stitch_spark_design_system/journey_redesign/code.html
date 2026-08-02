@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Journey - Spark</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#313030",
+                    "inverse-on-surface": "#f4f0f0",
+                    "on-error-container": "#93000a",
+                    "background": "#fdf8f8",
+                    "tertiary": "#000000",
+                    "secondary-fixed": "#e4e2e2",
+                    "tertiary-container": "#1c1b1b",
+                    "on-error": "#ffffff",
+                    "outline-variant": "#c4c7c7",
+                    "secondary-fixed-dim": "#c7c6c6",
+                    "outline": "#747878",
+                    "on-secondary-fixed-variant": "#464747",
+                    "surface-tint": "#5f5e5e",
+                    "primary": "#000000",
+                    "secondary": "#5e5e5e",
+                    "surface-container-highest": "#e6e1e1",
+                    "on-secondary-fixed": "#1b1c1c",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#484646",
+                    "surface-container-low": "#f7f2f2",
+                    "on-tertiary-container": "#858383",
+                    "surface-variant": "#e6e1e1",
+                    "on-primary-container": "#858383",
+                    "inverse-primary": "#c9c6c5",
+                    "surface-container-high": "#ece7e7",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed": "#1c1b1b",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed": "#1c1b1b",
+                    "on-primary": "#ffffff",
+                    "surface": "#fdf8f8",
+                    "tertiary-fixed-dim": "#c9c6c5",
+                    "surface-dim": "#ddd9d9",
+                    "on-secondary-container": "#626262",
+                    "primary-fixed-dim": "#c9c6c5",
+                    "surface-container": "#f1eded",
+                    "on-background": "#1c1b1c",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed": "#e5e2e1",
+                    "primary-container": "#1c1b1b",
+                    "primary-fixed": "#e5e2e1",
+                    "surface-bright": "#fdf8f8",
+                    "on-surface-variant": "#444748",
+                    "on-tertiary-fixed-variant": "#484646",
+                    "secondary-container": "#e1dfdf",
+                    "on-surface": "#1c1b1c",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "24px",
+                    "lg": "48px",
+                    "base": "8px",
+                    "md": "24px",
+                    "sm": "12px",
+                    "margin-desktop": "64px",
+                    "xl": "80px",
+                    "xs": "4px",
+                    "margin-mobile": "16px"
+            },
+            "fontFamily": {
+                    "label-sm": ["Inter", "sans-serif"],
+                    "headline-md": ["Inter", "sans-serif"],
+                    "headline-lg-mobile": ["Inter", "sans-serif"],
+                    "headline-lg": ["Inter", "sans-serif"],
+                    "body-md": ["Inter", "sans-serif"],
+                    "body-lg": ["Inter", "sans-serif"],
+                    "display-lg": ["Inter", "sans-serif"],
+                    "label-md": ["Inter", "sans-serif"]
+            },
+            "fontSize": {
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500"}]
+            }
+          }
+        }
+      }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Ambient shadow utility from design system */
+        .ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Fluid grid utilities */
+        .fluid-container {
+            width: 100%;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 16px;
+            padding-right: 16px;
+        }
+        @media (min-width: 768px) {
+            .fluid-container {
+                padding-left: 64px;
+                padding-right: 64px;
+            }
+        }
+        
+        /* Hide scrollbar for horizontal scrolling tags */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 md:pb-0 pt-16 font-body-md text-body-md">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-40 bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-16 transition-opacity duration-200">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-xl">bolt</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Spark</span>
+</div>
+<button class="flex items-center justify-center hover:opacity-80 transition-opacity duration-200">
+<span class="material-symbols-outlined text-primary text-xl">calendar_today</span>
+</button>
+</header>
+<!-- Main Canvas -->
+<main class="fluid-container py-md md:py-lg">
+<!-- Header Section -->
+<div class="mb-md md:mb-lg flex flex-col md:flex-row md:justify-between md:items-end gap-sm">
+<div>
+<h1 class="font-display-lg text-display-lg text-primary mb-xs">Journey</h1>
+<p class="font-body-lg text-body-lg text-secondary">12 Active Projects</p>
+</div>
+<div class="hidden md:flex gap-sm">
+<button class="h-10 px-sm flex items-center justify-center gap-xs rounded-full bg-white border border-surface-container-highest text-primary hover:bg-surface-container-low transition-colors ambient-shadow active:shadow-none">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+<span class="font-label-md text-label-md">Filter</span>
+</button>
+<button class="h-10 px-md flex items-center justify-center gap-xs rounded-full bg-primary text-on-primary hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-lg">add</span>
+<span class="font-label-md text-label-md">New Project</span>
+</button>
+</div>
+</div>
+<!-- Horizontal Tag Filters -->
+<div class="flex overflow-x-auto no-scrollbar gap-sm mb-lg pb-xs -mx-margin-mobile px-margin-mobile md:mx-0 md:px-0">
+<button class="shrink-0 h-8 px-sm rounded-full bg-primary text-on-primary font-label-md text-label-md">All Projects</button>
+<button class="shrink-0 h-8 px-sm rounded-full bg-[#F5F2F2] text-primary font-label-md text-label-md hover:bg-surface-container-highest transition-colors">In Progress</button>
+<button class="shrink-0 h-8 px-sm rounded-full bg-[#F5F2F2] text-primary font-label-md text-label-md hover:bg-surface-container-highest transition-colors">Planning</button>
+<button class="shrink-0 h-8 px-sm rounded-full bg-[#F5F2F2] text-primary font-label-md text-label-md hover:bg-surface-container-highest transition-colors">Review</button>
+<button class="shrink-0 h-8 px-sm rounded-full bg-[#F5F2F2] text-primary font-label-md text-label-md hover:bg-surface-container-highest transition-colors">Completed</button>
+</div>
+<!-- 2-Column Grid of Project Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Project Card 1 -->
+<article class="bg-white rounded-xl p-md border border-[#E5E1E1] ambient-shadow flex flex-col gap-sm hover:border-outline-variant transition-colors cursor-pointer group active:shadow-none active:border-outline">
+<div class="w-full h-40 rounded-lg overflow-hidden mb-xs relative bg-surface-container-low">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="A pristine, minimalist architectural rendering of a modern workspace interior in light mode. Soft, diffused daylight spills across clean white surfaces, subtle grey accents, and a singular sharp black structural line. The aesthetic is ultra-modern corporate, projecting calm efficiency and high-end design precision." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpLqYN6AvoyjjeSE-QzBucXH02Vmk0dorG2TsElptGReKuVv8rlKt-TX2u_i7CUspWTSP4mVwHk4dArG5Vwb7aBQQNbiKojE3MCYzC2paYCMFExFzW_fyE45AjKYjof45u9vsjubCYxp0eE9nwW5045a612b-xi4fPNpeg6hHjPdI-N8D17ZQfPlh0hFkqC-5WeHIDxz39aAH_1VmmJETYZeS57K1jaEmXdSkDIECVDYwsfRfXYZYMntyit0xpA1Oy8oNig4VtiJeW"/>
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur px-sm py-xs rounded-full">
+<span class="font-label-sm text-label-sm text-primary">In Progress</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-xs group-hover:text-secondary transition-colors">Q3 Brand Evolution</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-sm">Comprehensive update to primary visual tokens and marketing assets for the upcoming fiscal quarter launch.</p>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-secondary">Progress</span>
+<span class="font-label-sm text-label-sm text-primary">Step 3 of 4</span>
+</div>
+<div class="flex gap-xs w-full h-2">
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-surface-container-highest rounded-full flex-1"></div>
+</div>
+</div>
+</article>
+<!-- Project Card 2 -->
+<article class="bg-white rounded-xl p-md border border-[#E5E1E1] ambient-shadow flex flex-col gap-sm hover:border-outline-variant transition-colors cursor-pointer group active:shadow-none active:border-outline">
+<div class="w-full h-40 rounded-lg overflow-hidden mb-xs relative bg-surface-container-low">
+<div class="bg-cover bg-center w-full h-full group-hover:scale-105 transition-transform duration-500" data-alt="A macro shot of premium textured paper with precise, minimalist typography sketches in black ink. The lighting is bright and even, highlighting the subtle grain of the white paper. The overall mood is quiet focus and meticulous craftsmanship typical of high-end design workflows." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAg40A2_QZjTqokifNJr3yNpHJEAR3P3dwh6RlCREXuguZFFT9aMIxr05KVCMyVoTO8X42ZmRe-A8luU_pc6MqSyQkfdvrbNseQzXgsvO2qwMq7MoVMpRilw1dKMeZ1KPz0npRnlTMbbbAPCod8VWTfk31WAs8fv5RrZ6GtXMSIqjYuX5SP15h7fEtbJ_Q9AyFVzDldJtVhjztrsGKYzFqZ0iVV2mp48ySRNJLM0u0e8QNj1isjhOa-PfmT_dvj5JtYqzsDn9-obk1l')"></div>
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur px-sm py-xs rounded-full">
+<span class="font-label-sm text-label-sm text-primary">Planning</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-xs group-hover:text-secondary transition-colors">Design System 2.0</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-sm">Auditing existing components and establishing new fluid grid parameters for the enterprise web application.</p>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-secondary">Progress</span>
+<span class="font-label-sm text-label-sm text-primary">Step 1 of 4</span>
+</div>
+<div class="flex gap-xs w-full h-2">
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-surface-container-highest rounded-full flex-1"></div>
+<div class="h-full bg-surface-container-highest rounded-full flex-1"></div>
+<div class="h-full bg-surface-container-highest rounded-full flex-1"></div>
+</div>
+</div>
+</article>
+<!-- Project Card 3 -->
+<article class="bg-white rounded-xl p-md border border-[#E5E1E1] ambient-shadow flex flex-col gap-sm hover:border-outline-variant transition-colors cursor-pointer group active:shadow-none active:border-outline">
+<div class="w-full h-40 rounded-lg overflow-hidden mb-xs relative bg-gradient-to-br from-surface-container to-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary opacity-50" style="font-size: 48px;">data_usage</span>
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur px-sm py-xs rounded-full">
+<span class="font-label-sm text-label-sm text-primary">Review</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-xs group-hover:text-secondary transition-colors">Analytics Dashboard</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-sm">Finalizing the data visualization modules and user testing the new reporting flow before deployment.</p>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-secondary">Progress</span>
+<span class="font-label-sm text-label-sm text-primary">Step 4 of 4</span>
+</div>
+<div class="flex gap-xs w-full h-2">
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-primary rounded-full flex-1"></div>
+</div>
+</div>
+</article>
+<!-- Project Card 4 -->
+<article class="bg-white rounded-xl p-md border border-[#E5E1E1] ambient-shadow flex flex-col gap-sm hover:border-outline-variant transition-colors cursor-pointer group active:shadow-none active:border-outline">
+<div class="w-full h-40 rounded-lg overflow-hidden mb-xs relative bg-surface-container-low">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Abstract 3D geometric shapes hovering in a pristine white void. Spheres and cubes rendered in matte light grey and stark black. The lighting casts soft, ambient shadows, creating a serene, highly ordered visual composition suitable for modern corporate branding." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBNmkzdrsgZsRj3OqHRRcSraEIwNesMPm3x5Tq4CB7pEcpeu_nCoEUjFWGsZ8un_RLWRPJjbPYZReL8SuJJunynXib1aZmGlC9sbAwmZNNulWlbfArHBNnqlFD6JHz-6fTWLz8UBjOCvRmF56mGlKzMSsII-iTTOLs_GkdlPe5z18mNsaQClPVXDHLFlW-Jzf5IEmQSWdbel9CZOUwTLb31y-yiVkFGCvBi_OjSrKoze-Nps74AJocgWjP3fTxw2P9cueA7tHUZLa_"/>
+<div class="absolute top-sm right-sm bg-white/90 backdrop-blur px-sm py-xs rounded-full">
+<span class="font-label-sm text-label-sm text-primary">In Progress</span>
+</div>
+</div>
+<div>
+<h3 class="font-headline-md text-headline-md text-primary mb-xs group-hover:text-secondary transition-colors">Client Onboarding Flow</h3>
+<p class="font-body-md text-body-md text-secondary line-clamp-2 mb-sm">Streamlining the initial 30 days for new enterprise clients, focusing on reducing friction in account setup.</p>
+</div>
+<div class="mt-auto">
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-sm text-label-sm text-secondary">Progress</span>
+<span class="font-label-sm text-label-sm text-primary">Step 2 of 4</span>
+</div>
+<div class="flex gap-xs w-full h-2">
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-primary rounded-full flex-1"></div>
+<div class="h-full bg-surface-container-highest rounded-full flex-1"></div>
+<div class="h-full bg-surface-container-highest rounded-full flex-1"></div>
+</div>
+</div>
+</article>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe bg-surface/80 backdrop-blur-md border-t border-outline-variant shadow-sm rounded-t-xl transition-transform duration-150">
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">search</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">add</span>
+</a>
+<!-- Active Tab: Folder representing Projects/Journey -->
+<a class="flex flex-col items-center justify-center w-full h-full relative after:content-['•'] after:absolute after:-bottom-1 after:text-[10px] text-primary active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl mb-1" data-weight="fill">folder</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary hover:text-primary active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-2xl mb-1">person</span>
+</a>
+</nav>
+</body></html>

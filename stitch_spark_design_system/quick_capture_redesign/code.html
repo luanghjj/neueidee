@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quick Capture</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#313030",
+                        "inverse-on-surface": "#f4f0f0",
+                        "on-error-container": "#93000a",
+                        "background": "#fdf8f8",
+                        "tertiary": "#000000",
+                        "secondary-fixed": "#e4e2e2",
+                        "tertiary-container": "#1c1b1b",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#c4c7c7",
+                        "secondary-fixed-dim": "#c7c6c6",
+                        "outline": "#747878",
+                        "on-secondary-fixed-variant": "#464747",
+                        "surface-tint": "#5f5e5e",
+                        "primary": "#000000",
+                        "secondary": "#5e5e5e",
+                        "surface-container-highest": "#e6e1e1",
+                        "on-secondary-fixed": "#1b1c1c",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#484646",
+                        "surface-container-low": "#f7f2f2",
+                        "on-tertiary-container": "#858383",
+                        "surface-variant": "#e6e1e1",
+                        "on-primary-container": "#858383",
+                        "inverse-primary": "#c9c6c5",
+                        "surface-container-high": "#ece7e7",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#1c1b1b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "surface": "#fdf8f8",
+                        "tertiary-fixed-dim": "#c9c6c5",
+                        "surface-dim": "#ddd9d9",
+                        "on-secondary-container": "#626262",
+                        "primary-fixed-dim": "#c9c6c5",
+                        "surface-container": "#f1eded",
+                        "on-background": "#1c1b1c",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#e5e2e1",
+                        "primary-container": "#1c1b1b",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-bright": "#fdf8f8",
+                        "on-surface-variant": "#444748",
+                        "on-tertiary-fixed-variant": "#484646",
+                        "secondary-container": "#e1dfdf",
+                        "on-surface": "#1c1b1c",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "base": "8px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "margin-desktop": "64px",
+                        "xl": "80px",
+                        "xs": "4px",
+                        "margin-mobile": "16px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Safe area padding for mobile bottom nav / sheet */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 24px); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Modal animation classes */
+        .modal-enter { transform: translateY(100%); opacity: 0; }
+        .modal-enter-active { transform: translateY(0); opacity: 1; transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.4s ease-out; }
+        .backdrop-enter { opacity: 0; }
+        .backdrop-enter-active { opacity: 1; transition: opacity 0.3s ease-out; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background h-screen w-full overflow-hidden relative selection:bg-primary selection:text-on-primary">
+<!-- APP BACKGROUND CONTEXT (Dimmed/Blurred) -->
+<div class="h-full w-full flex flex-col scale-[0.98] origin-top transition-transform duration-500 opacity-80 blur-[2px] pointer-events-none">
+<!-- Shared Component: TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim font-headline-lg-mobile text-headline-lg-mobile fixed top-0 w-full border-b border-outline-variant dark:border-outline flex justify-between items-center px-margin-mobile h-16 w-full z-10 transition-opacity duration-200">
+<button aria-label="Leading Action" class="material-symbols-outlined text-primary dark:text-primary-fixed hover:opacity-80 transition-opacity duration-200">bolt</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Spark</h1>
+<button aria-label="Trailing Action" class="material-symbols-outlined text-primary dark:text-primary-fixed hover:opacity-80 transition-opacity duration-200">calendar_today</button>
+</header>
+<!-- Dummy Content to show depth -->
+<main class="flex-1 mt-16 p-margin-mobile flex flex-col gap-md pt-lg">
+<div class="w-full h-32 bg-surface-container rounded-xl border border-outline-variant opacity-50"></div>
+<div class="w-full h-48 bg-surface-container rounded-xl border border-outline-variant opacity-50"></div>
+</main>
+<!-- Shared Component: BottomNavBar (Behind the modal logic) -->
+<nav aria-label="Bottom Navigation" class="bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md font-label-sm text-label-sm fixed bottom-0 w-full rounded-t-xl border-t border-outline-variant dark:border-outline shadow-sm fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 pb-safe hidden md:flex">
+<!-- Nav hidden on desktop per rules, but showing mobile layout intent behind modal -->
+</nav>
+<nav aria-label="Bottom Navigation" class="md:hidden bg-surface/80 dark:bg-surface-dim/80 backdrop-blur-md font-label-sm text-label-sm fixed bottom-0 w-full rounded-t-xl border-t border-outline-variant dark:border-outline shadow-sm fixed bottom-0 left-0 w-full z-40 flex justify-around items-center h-[80px] pb-safe">
+<button class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1">home</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1">search</span>
+</button>
+<!-- Active Item -->
+<button class="flex flex-col items-center justify-center w-full h-full relative after:content-['•'] after:absolute after:-bottom-1 after:text-[10px] text-primary dark:text-primary-fixed hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">add</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1">folder</span>
+</button>
+<button class="flex flex-col items-center justify-center w-full h-full text-secondary dark:text-secondary-fixed-dim hover:text-primary dark:hover:text-primary-fixed active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1">person</span>
+</button>
+</nav>
+</div>
+<!-- MODAL OVERLAY / BACKDROP -->
+<div class="absolute inset-0 bg-tertiary/20 backdrop-blur-[4px] z-40 backdrop-enter-active"></div>
+<!-- BOTTOM SHEET MODAL -->
+<div class="absolute bottom-0 left-0 w-full bg-surface-container-lowest rounded-t-[32px] z-50 flex flex-col shadow-[0_-8px_40px_rgba(0,0,0,0.08)] modal-enter-active max-h-[795px]">
+<!-- Drag Handle Area -->
+<div class="w-full flex justify-center pt-3 pb-2 cursor-grab">
+<div class="w-12 h-1.5 bg-outline-variant rounded-full"></div>
+</div>
+<!-- Scrollable Content Area -->
+<div class="px-margin-mobile pb-safe flex flex-col gap-lg overflow-y-auto pt-2">
+<!-- Header -->
+<div class="flex justify-between items-center">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">New Idea</h2>
+<button class="w-8 h-8 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high transition-colors text-secondary">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Main Input Area -->
+<div class="w-full relative group">
+<textarea autofocus="" class="w-full h-32 bg-transparent border-none p-0 focus:ring-0 resize-none font-headline-md text-headline-md text-primary placeholder:text-outline focus:outline-none" placeholder="What's sparking?"></textarea>
+</div>
+<!-- Configuration Section -->
+<div class="flex flex-col gap-md">
+<!-- Stage Selection -->
+<div class="flex flex-col gap-sm">
+<span class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Stage</span>
+<div class="flex gap-2 overflow-x-auto no-scrollbar pb-1 -mx-margin-mobile px-margin-mobile">
+<!-- Active Chip -->
+<button class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-primary text-on-primary font-label-md text-label-md transition-transform active:scale-95 shadow-sm">
+<span class="text-base">⚡</span> Spark
+                        </button>
+<!-- Inactive Chips -->
+<button class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container-low text-primary border border-outline-variant/30 hover:bg-surface-container font-label-md text-label-md transition-transform active:scale-95">
+<span class="text-base">📋</span> Plan
+                        </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container-low text-primary border border-outline-variant/30 hover:bg-surface-container font-label-md text-label-md transition-transform active:scale-95">
+<span class="text-base">🛠️</span> Build
+                        </button>
+<button class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface-container-low text-primary border border-outline-variant/30 hover:bg-surface-container font-label-md text-label-md transition-transform active:scale-95">
+<span class="text-base">✅</span> Done
+                        </button>
+</div>
+</div>
+<!-- Tag Input -->
+<div class="flex items-center gap-sm bg-surface-container-lowest border border-outline-variant rounded-xl px-4 py-3 focus-within:border-primary transition-colors">
+<span class="material-symbols-outlined text-outline">sell</span>
+<input class="bg-transparent border-none p-0 w-full font-body-md text-body-md text-primary placeholder:text-outline focus:ring-0 focus:outline-none" placeholder="Add tags..." type="text"/>
+</div>
+</div>
+<!-- Action Button -->
+<div class="pt-sm pb-sm mt-auto">
+<button class="w-full bg-primary text-on-primary py-4 rounded-xl font-label-md text-label-md font-semibold flex justify-center items-center gap-2 active:scale-[0.98] transition-transform shadow-md hover:opacity-90">
+                    Capture Idea
+                </button>
+</div>
+</div>
+</div>
+</body></html>
