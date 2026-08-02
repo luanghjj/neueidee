@@ -3,8 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="manifest" href="manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Spark">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="theme-color" content="#fdf8f8">
 <title>Spark — Ideen & Projekte</title>
 <script>
@@ -764,10 +767,22 @@ tailwind.config = {
   </div>
 </div>
 
+<!-- iOS PWA Installation Banner -->
+<div id="ios-pwa-banner" class="hidden fixed bottom-4 left-4 right-4 bg-surface border border-border rounded-2xl p-4 shadow-ambient z-50 flex items-center justify-between gap-3 animate-fade-in">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center font-bold text-lg">⚡</div>
+    <div>
+      <p class="text-xs font-bold text-primary">Auf iPhone installieren / Thêm vào màn hình chính</p>
+      <p class="text-[11px] text-secondary">Tippe auf <span class="font-semibold">Teilen</span> <span class="material-symbols-outlined text-[13px] inline align-text-bottom">ios_share</span> &amp; wähle <span class="font-semibold">"Zum Home-Bildschirm"</span>.</p>
+    </div>
+  </div>
+  <button id="btn-close-ios-banner" class="text-xs text-secondary hover:text-primary p-1" aria-label="Schließen">✕</button>
+</div>
+
 <!-- Toast -->
 <div id="toast" class="toast"></div>
 
-<script src="js/data.js?v=16"></script>
-<script src="js/app.js?v=16"></script>
+<script src="js/data.js?v=17"></script>
+<script src="js/app.js?v=17"></script>
 </body>
 </html>

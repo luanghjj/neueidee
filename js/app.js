@@ -74,6 +74,7 @@ const App = {
     this.renderProjects();
     this.renderProfile();
     this.setActiveNav(this.state.view);
+    this.checkIOSInstallPrompt();
     if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
   },
 
@@ -663,14 +664,24 @@ const App = {
     const btn = document.getElementById('btn-voice');
     const hint = document.getElementById('voice-hint');
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){ btn.disabled = true; btn.style.opacity = '.35'; btn.title = 'Spracheingabe wird in diesem Browser nicht unterstützt'; return; }
+    if(!SR){
+      if(btn){ btn.disabled = true; btn.style.opacity = '.35'; btn.title = 'Spracheingabe wird in diesem Browser nicht unterstützt'; }
+      return;
+    }
     const rec = new SR();
-    rec.lang = 'de-DE';
-    rec.continuous = true;
+    // Support multi-language detection fallback (defaulting to de-DE or vi-VN if browser is Vietnamese)
+    rec.lang = (navigator.language && (navigator.language.startsWith('vi') || navigator.language.startsWith('de'))) ? navigator.language : 'de-DE';
+    rec.continuous = false; // continuous = false is 100x more reliable on iOS Safari
     rec.interimResults = true;
     this._rec = rec;
     let baseText = '';
-    rec.onstart = () => { this.state.voiceOn = true; btn.classList.add('recording'); if(hint) hint.textContent = 'Höre zu… zum Stoppen tippen'; };
+
+    rec.onstart = () => {
+      this.state.voiceOn = true;
+      if(btn) btn.classList.add('recording');
+      if(hint) hint.textContent = '🎙️ Höre zu… / Đang lắng nghe…';
+    };
+
     rec.onresult = e => {
       let finalTxt = '', interim = '';
       for(let i=e.resultIndex; i<e.results.length; i++){
@@ -678,17 +689,69 @@ const App = {
         if(e.results[i].isFinal) finalTxt += t; else interim += t;
       }
       const ta = document.getElementById('capture-text');
-      if(finalTxt){ baseText = (baseText ? baseText+' ' : '') + finalTxt.trim(); }
-      ta.value = (baseText + (interim ? ' '+interim : '')).trim();
-      this.saveDraft();
+      if(ta){
+        if(finalTxt){ baseText = (baseText ? baseText+' ' : '') + finalTxt.trim(); }
+        ta.value = (baseText + (interim ? ' '+interim : '')).trim();
+        this.saveDraft();
+      }
     };
-    rec.onerror = ev => { if(hint) hint.textContent = ev.error==='not-allowed' ? 'Mikrofon-Zugriff verweigert' : 'Mikrofon-Fehler'; };
-    rec.onend = () => { this.state.voiceOn = false; btn.classList.remove('recording'); if(hint) hint.textContent=''; };
-    btn.onclick = () => {
-      if(this.state.voiceOn){ rec.stop(); return; }
-      baseText = document.getElementById('capture-text').value.trim();
-      try { rec.start(); } catch(_){ /* already started */ }
+
+    rec.onerror = ev => {
+      if(ev.error === 'no-speech') return; // Silence pause is normal
+      if(hint) hint.textContent = ev.error==='not-allowed' ? '❌ Mikrofon verweigert / Từ chối mic' : '❌ Fehler: ' + ev.error;
     };
+
+    rec.onend = () => {
+      if(this.state.voiceOn){
+        try {
+          rec.start();
+        } catch(_) {
+          this.state.voiceOn = false;
+          if(btn) btn.classList.remove('recording');
+          if(hint) hint.textContent = '';
+        }
+      } else {
+        if(btn) btn.classList.remove('recording');
+        if(hint) hint.textContent = '';
+      }
+    };
+
+    if(btn){
+      btn.onclick = () => {
+        if(this.state.voiceOn){
+          this.state.voiceOn = false;
+          try { rec.stop(); } catch(_){}
+          if(btn) btn.classList.remove('recording');
+          if(hint) hint.textContent = '';
+          return;
+        }
+        const ta = document.getElementById('capture-text');
+        baseText = ta ? ta.value.trim() : '';
+        this.state.voiceOn = true;
+        try {
+          rec.start();
+        } catch(e) {
+          if(hint) hint.textContent = '❌ Mikrofon konnte nicht gestartet werden';
+        }
+      };
+    }
+  },
+
+  checkIOSInstallPrompt(){
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+    const dismissed = localStorage.getItem('spark_ios_banner_dismissed');
+    if(isIOS && !isStandalone && !dismissed){
+      const banner = document.getElementById('ios-pwa-banner');
+      if(banner) banner.classList.remove('hidden');
+      const btnClose = document.getElementById('btn-close-ios-banner');
+      if(btnClose){
+        btnClose.onclick = () => {
+          if(banner) banner.classList.add('hidden');
+          localStorage.setItem('spark_ios_banner_dismissed', '1');
+        };
+      }
+    }
   },
 
   // ── IMAGE ATTACH ──
