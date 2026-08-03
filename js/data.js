@@ -11,6 +11,7 @@ try {
 
 const DB = {
   supabase: _sbClient,
+  onLiveComment: null,
 
   // ── SUPABASE CLOUD SYNC ──
   async syncSupabase(){
@@ -35,6 +36,107 @@ const DB = {
         this.saveProjects(Array.from(mergedMap.values()));
       }
     } catch (_) {}
+  },
+
+  // ── SHARES (chia sẻ dự án theo nickname) ──
+  getShares(){ return JSON.parse(localStorage.getItem('spark_shares')||'[]') },
+  saveShares(list){ localStorage.setItem('spark_shares', JSON.stringify(list)) },
+  getSharedProjectIds(){ return this.getShares().filter(s=>s.sharedWith===this.getUser()).map(s=>s.projectId) },
+  isProjectShared(projectId){ return this.getShares().some(s=>s.projectId===projectId) },
+
+  async shareProject(projectId, nickname){
+    const name = (nickname||'').trim();
+    if(!name || name===this.getUser()) return null;
+    const list = this.getShares();
+    if(list.some(s=>s.projectId===projectId && s.sharedWith===name)) return null;
+    const share = { id:'sh_'+Date.now()+'_'+Math.random().toString(36).slice(2,8), projectId, owner:this.getUser(), sharedWith:name, createdAt:Date.now() };
+    list.push(share);
+    this.saveShares(list);
+    if(this.supabase){
+      try {
+        await this.supabase.from('shares').upsert(share);
+        const p = this.getProject(projectId);
+        if(p){
+          const payload = {...p, desc: p.description || p.desc || null};
+          await this.supabase.from('projects').upsert(payload);
+        }
+      } catch(_) {}
+    }
+    return share;
+  },
+
+  async removeShare(shareId){
+    this.saveShares(this.getShares().filter(s=>s.id!==shareId));
+    if(this.supabase){
+      try { await this.supabase.from('shares').delete().eq('id', shareId); } catch(_) {}
+    }
+  },
+
+  async syncShares(){
+    if(!this.supabase) return;
+    const me = this.getUser(); if(!me) return;
+    try {
+      // Lấy mọi share liên quan đến mình (share cho mình + mình share)
+      const { data } = await this.supabase.from('shares').select('*').or(`owner.eq.${me},sharedWith.eq.${me}`);
+      if(!data) return;
+      const local = this.getShares();
+      const mergedMap = new Map(local.map(s=>[s.id,s]));
+      data.forEach(s=>mergedMap.set(s.id,s));
+      this.saveShares(Array.from(mergedMap.values()));
+
+      // Tải các project được share về máy
+      const incoming = data.filter(s=>s.sharedWith===me).map(s=>s.projectId);
+      if(incoming.length){
+        const { data: remoteProjects } = await this.supabase.from('projects').select('*').in('id', incoming);
+        if(remoteProjects && remoteProjects.length){
+          const localProjects = this.getProjects();
+          const pmap = new Map(localProjects.map(p=>[p.id,p]));
+          remoteProjects.forEach(p=>{
+            const mapped = {...p, description: p.description || p.desc || null};
+            delete mapped.desc;
+            pmap.set(p.id, mapped);
+          });
+          this.saveProjects(Array.from(pmap.values()));
+        }
+      }
+    } catch(_) {}
+  },
+
+  async syncComments(){
+    if(!this.supabase) return;
+    const ids = this.getSharedProjectIds();
+    if(!ids.length) return;
+    try {
+      const { data } = await this.supabase.from('project_comments').select('*').in('projectId', ids);
+      if(!data || !data.length) return;
+      const local = this.getComments();
+      const seen = new Set(local.map(c=>c.id));
+      let changed = false;
+      data.forEach(c=>{ if(!seen.has(c.id)){ local.push(c); changed=true; } });
+      if(changed) this.saveComments(local);
+    } catch(_) {}
+  },
+
+  // ── REALTIME (chat live) ──
+  initRealtime(){
+    if(!this.supabase || this._rtChannel) return;
+    try {
+      this._rtChannel = this.supabase
+        .channel('spark-project-chat')
+        .on('postgres_changes', { event:'INSERT', schema:'public', table:'project_comments' }, payload => {
+          this.handleLiveComment(payload.new);
+        })
+        .subscribe();
+    } catch(_) {}
+  },
+
+  handleLiveComment(c){
+    if(!c || !c.id) return;
+    const all = this.getComments();
+    if(all.some(x=>x.id===c.id)) return;
+    all.push({ id:c.id, projectId:c.projectId, author:c.author, content:c.content, createdAt:c.createdAt });
+    this.saveComments(all);
+    if(this.onLiveComment) this.onLiveComment(c);
   },
 
   async pushSupabase(table, payload){
@@ -143,6 +245,10 @@ const DB = {
   updateProject(id, patch){
     const list = this.getProjects().map(p=>p.id===id?{...p,...patch,updatedAt:Date.now()}:p);
     this.saveProjects(list);
+    const updated = list.find(p=>p.id===id);
+    if(updated && this.isProjectShared(id) && this.supabase){
+      try { this.supabase.from('projects').upsert({...updated, desc: updated.description || updated.desc || null}).then(); } catch(_) {}
+    }
   },
   deleteProject(id){
     this.saveProjects(this.getProjects().filter(p=>p.id!==id));
@@ -190,6 +296,10 @@ const DB = {
     comment.createdAt = Date.now();
     list.push(comment);
     this.saveComments(list);
+    // Dự án được share → đẩy lên Supabase để chat live
+    if(this.isProjectShared(comment.projectId) && this.supabase){
+      try { this.supabase.from('project_comments').insert(comment).then(); } catch(_) {}
+    }
     return comment;
   },
   deleteComment(id){ this.saveComments(this.getComments().filter(c=>c.id!==id)) },

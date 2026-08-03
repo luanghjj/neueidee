@@ -18,6 +18,7 @@ const App = {
     sourceIdeaId: null,
     pendingDelete: null,
     lastFocus: null,
+    currentProjectId: null,
   },
 
   // ── STAGE CONFIG ──
@@ -76,11 +77,19 @@ const App = {
     this.setActiveNav(this.state.view);
     this.checkIOSInstallPrompt();
     if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    DB.onLiveComment = c => this.handleLiveComment(c);
     DB.syncSupabase().then(() => {
       this.renderOverview();
       this.renderIdeas();
       this.renderProjects();
     }).catch(()=>{});
+    DB.syncShares().then(() => {
+      DB.syncComments().then(() => {
+        this.renderProjects();
+      });
+      this.renderProjects();
+    }).catch(()=>{});
+    DB.initRealtime();
   },
 
   // ── DARK MODE ──
@@ -163,7 +172,13 @@ const App = {
     this.state.view = view;
     if(view==='overview') this.renderOverview();
     if(view==='ideas') this.renderIdeas();
-    if(view==='journey') this.renderProjects();
+    if(view==='journey'){
+      this.renderProjects();
+      DB.syncShares().then(() => {
+        DB.syncComments().then(() => this.renderProjects());
+        this.renderProjects();
+      }).catch(()=>{});
+    }
     if(view==='profile') this.renderProfile();
   },
 
@@ -178,10 +193,16 @@ const App = {
   },
   closeModal(id){
     if(id==='modal-capture' && this.state.voiceOn && this._rec){ try{ this._rec.stop(); }catch(_){} }
+    if(id==='modal-project-detail') this.state.currentProjectId = null;
     document.getElementById(id)?.classList.remove('open');
     const lf = this.state.lastFocus;
     if(lf && document.contains(lf)) { try { lf.focus({preventScroll:true}); } catch(_){} }
     this.state.lastFocus = null;
+  },
+
+  handleLiveComment(c){
+    if(this.state.currentProjectId === c.projectId) this.renderComments(c.projectId, true);
+    this.toast(`💬 ${c.author}: ${this.snippet(c.content, 36)}`, 2600);
   },
 
   toast(msg, dur=2200){
@@ -1138,6 +1159,7 @@ const App = {
               <span class="material-symbols-outlined text-dim flex-shrink-0" style="font-size:18px" aria-hidden="true">chevron_right</span>
             </div>
             <span class="status-badge ${p.status} mt-1.5">${this.statusLabel[p.status]||p.status}</span>
+            ${DB.isProjectShared(p.id)?'<span class="text-[10px] font-semibold bg-surface-high text-primary border border-border rounded-full px-2 py-0.5 ml-1 align-middle">Geteilt</span>':''}
             <div class="flex gap-1 mt-2">${bars}</div>
           </div>
         </div>
@@ -1266,6 +1288,7 @@ const App = {
   openProjectDetail(id){
     const p = DB.getProject(id);
     if(!p) return;
+    this.state.currentProjectId = id;
     const user = DB.getUser();
     const emojis = ['👍','❤️','🔥','💡'];
     const step = this.progressStep(p.status);
@@ -1319,6 +1342,19 @@ const App = {
             ${emojis.map(em=>{ const c=DB.countReaction(id,em), r=DB.hasReacted(id,em,user);
               return `<button class="px-3 py-2 rounded-xl border text-sm ${r?'border-primary bg-surface-mid':'border-border bg-white'}" data-emoji="${em}" aria-label="Reaktion ${em}" aria-pressed="${r}">${em} ${c||''}</button>`;}).join('')}
           </div>
+        </div>
+
+        <div class="bg-surface-mid border border-border rounded-2xl p-4 shadow-ambient space-y-3">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary" style="font-size:20px" aria-hidden="true">group_add</span>
+            <p class="text-xs font-semibold uppercase tracking-widest text-dim">Projekt teilen</p>
+          </div>
+          <div id="share-wrap"></div>
+          <div class="flex gap-2">
+            <input type="text" id="share-nick-input" class="inp !py-2 !text-sm flex-1" placeholder="Nickname der anderen Person..." aria-label="Nickname zum Teilen" autocomplete="off">
+            <button id="btn-share-project" class="btn-primary px-4 py-2"><span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">send</span></button>
+          </div>
+          <p class="text-[11px] text-dim">Die andere Person sieht dieses Projekt sofort, sobald sie sich mit demselben Nickname anmeldet. Beide können dann live chatten.</p>
         </div>
 
         <div class="bg-surface-mid border border-border rounded-2xl p-4 shadow-ambient space-y-2">
@@ -1375,6 +1411,21 @@ const App = {
     document.getElementById('btn-send-cmt').onclick = () => this.addComment(id);
     document.getElementById('new-comment').addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.addComment(id); } });
     this.renderComments(id);
+    this.renderShareSection(id);
+    document.getElementById('btn-share-project').onclick = async () => {
+      const inp = document.getElementById('share-nick-input');
+      const nick = inp.value.trim();
+      if(!nick){ this.toast('Nickname eingeben'); return; }
+      const share = await DB.shareProject(id, nick);
+      inp.value='';
+      if(!share){
+        this.toast(nick===user ? 'Das bist du selbst' : 'Bereits geteilt');
+        return;
+      }
+      this.renderShareSection(id);
+      this.renderProjects();
+      this.toast(`✅ Mit "${share.sharedWith}" geteilt`);
+    };
     this.renderChecklist(id);
     document.getElementById('btn-check-add').onclick = () => {
       const inp = document.getElementById('check-new-input');
@@ -1413,7 +1464,35 @@ const App = {
     });
   },
 
-  renderComments(projectId){
+  renderShareSection(projectId){
+    const wrap = document.getElementById('share-wrap');
+    if(!wrap) return;
+    const me = DB.getUser();
+    const shares = DB.getShares().filter(s=>s.projectId===projectId);
+    if(!shares.length){
+      wrap.innerHTML = `<p class="text-xs text-secondary">Noch nicht geteilt. Gib den Nickname einer Person ein, um gemeinsam am Projekt zu arbeiten.</p>`;
+      return;
+    }
+    wrap.innerHTML = shares.map(s => `
+      <div class="flex items-center justify-between bg-white border border-border rounded-xl px-3 py-2.5 mb-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <span class="material-symbols-outlined text-secondary" style="font-size:18px" aria-hidden="true">person</span>
+          <span class="text-sm font-semibold truncate">${this.esc(s.sharedWith)}</span>
+          ${s.owner!==me?`<span class="text-[10px] text-secondary bg-surface-highest rounded-full px-2 py-0.5 flex-shrink-0">von ${this.esc(s.owner)}</span>`:''}
+        </div>
+        ${s.owner===me?`<button class="btn-share-remove text-xs text-secondary hover:text-red-500 flex-shrink-0" data-id="${s.id}" aria-label="Teilung entfernen">Entfernen</button>`:''}
+      </div>`).join('');
+    wrap.querySelectorAll('.btn-share-remove').forEach(b => {
+      b.onclick = async () => {
+        await DB.removeShare(b.dataset.id);
+        this.renderShareSection(projectId);
+        this.renderProjects();
+        this.toast('Teilung entfernt');
+      };
+    });
+  },
+
+  renderComments(projectId, scrollBottom){
     const comments = DB.getComments(projectId);
     const list = document.getElementById('comment-list');
     const cnt = document.getElementById('cmt-count');
@@ -1425,6 +1504,10 @@ const App = {
         <p class="text-xs font-semibold">${this.esc(c.author||'Anonym')} <span class="text-secondary font-normal">· ${this.ago(c.createdAt)}</span></p>
         <p class="text-sm mt-1 whitespace-pre-wrap">${this.esc(c.content)}</p>
       </div>`).join('');
+    if(scrollBottom){
+      const inner = document.getElementById('proj-detail-inner');
+      if(inner) inner.scrollTop = inner.scrollHeight;
+    }
   },
 
   addComment(projectId){
