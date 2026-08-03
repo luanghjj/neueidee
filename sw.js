@@ -1,8 +1,8 @@
-const CACHE = 'spark-v2';
-const ASSETS = ['./', './index.html', './css/app.css', './js/data.js', './js/app.js', './manifest.json'];
+const CACHE = 'spark-v3';
+const CORE = ['./', './index.html', './css/app.css', './js/data.js', './js/app.js', './manifest.json'];
 
 self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)));
   self.skipWaiting();
 });
 self.addEventListener('activate', e => {
@@ -12,5 +12,17 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 self.addEventListener('fetch', e => {
-  e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request)));
+  const req = e.request;
+  if (req.method !== 'GET' || !req.url.startsWith('http')) return;
+  // Network-first: luôn lấy bản mới nhất từ server, cache chỉ dùng khi offline.
+  // Tránh kẹt cache cũ (app.js cũ hiển thị mãi).
+  e.respondWith(
+    fetch(req)
+      .then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => { try { c.put(req, copy); } catch(_) {} });
+        return res;
+      })
+      .catch(() => caches.match(req).then(hit => hit || Response.error()))
+  );
 });
