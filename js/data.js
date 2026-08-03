@@ -13,6 +13,21 @@ const DB = {
   supabase: _sbClient,
   onLiveComment: null,
 
+  // Chuyển project (JS) → payload khớp schema Supabase (bảng có cột "desc", không có "description")
+  projectToRow(p){
+    const { id, name, status, cover, link, tags, gallery, checklist, createdAt, updatedAt } = p;
+    return { id, name, desc: p.description || p.desc || null, status, cover, link,
+      tags: tags || [], gallery: gallery || [], checklist: checklist || [], createdAt, updatedAt };
+  },
+
+  // Chuyển idea (JS) → payload khớp schema (JS dùng isPinned/aiChat, bảng dùng pinned)
+  ideaToRow(i){
+    const { id, content, author, stage, color, prototypeHtml, tags, images, timeline, createdAt, updatedAt } = i;
+    return { id, content, author, stage, color, pinned: i.isPinned || false,
+      prototypeHtml: prototypeHtml || null, tags: tags || [], images: images || [],
+      timeline: timeline || [], createdAt, updatedAt };
+  },
+
   // ── SUPABASE CLOUD SYNC ──
   async syncSupabase(){
     if (!this.supabase) return;
@@ -56,10 +71,7 @@ const DB = {
       try {
         await this.supabase.from('shares').upsert(share);
         const p = this.getProject(projectId);
-        if(p){
-          const payload = {...p, desc: p.description || p.desc || null};
-          await this.supabase.from('projects').upsert(payload);
-        }
+        if(p) await this.supabase.from('projects').upsert(this.projectToRow(p));
       } catch(_) {}
     }
     return share;
@@ -167,14 +179,14 @@ const DB = {
     idea.timeline = [{ stage: idea.stage, note:'Idee erfasst', author: idea.author, ts: idea.createdAt }];
     list.unshift(idea);
     this.saveIdeas(list);
-    this.pushSupabase('ideas', idea);
+    this.pushSupabase('ideas', this.ideaToRow(idea));
     return idea;
   },
   updateIdea(id, patch){
     const list = this.getIdeas().map(i => i.id===id ? {...i,...patch, updatedAt:Date.now()} : i);
     this.saveIdeas(list);
     const updated = list.find(i=>i.id===id);
-    if(updated) this.pushSupabase('ideas', updated);
+    if(updated) this.pushSupabase('ideas', this.ideaToRow(updated));
   },
   deleteIdea(id){
     this.saveIdeas(this.getIdeas().filter(i=>i.id!==id));
@@ -247,7 +259,7 @@ const DB = {
     this.saveProjects(list);
     const updated = list.find(p=>p.id===id);
     if(updated && this.isProjectShared(id) && this.supabase){
-      try { this.supabase.from('projects').upsert({...updated, desc: updated.description || updated.desc || null}).then(); } catch(_) {}
+      try { this.supabase.from('projects').upsert(this.projectToRow(updated)).then(); } catch(_) {}
     }
   },
   deleteProject(id){
