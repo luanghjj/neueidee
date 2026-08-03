@@ -1,6 +1,6 @@
 /* Spark v3 — Data Layer (localStorage + Supabase Sync) */
 const SUPABASE_URL = 'https://bknbretpqzbqadensozh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbmJyZXRwcXpicWFkZW5zb3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MDI0MzAsImV4cCI6MjEwMTI3ODQzMH0.vbrPJD07PYyzV7jaYxAGE2gwpL1w2SELEPDm18Cw06Q';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrbmJyZXRwcXpicWFkZW5zb3poIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3MDI0MzAsImV4cCI6MjEwMTI3ODQzMH0.vbrPJD07PYyzV7jaYxAGE2gwpL1w2SELEPDm18Cw06Q';
 
 let _sbClient = null;
 try {

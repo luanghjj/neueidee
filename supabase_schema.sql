@@ -91,7 +91,11 @@ CREATE POLICY "Public access project_comments" ON project_comments FOR ALL USING
 
 -- ==========================================
 -- 7. Bật Realtime cho bảng bình luận (chat live)
--- Nếu báo lỗi "publication does not exist", chạy:
---   CREATE PUBLICATION supabase_realtime;
 -- ==========================================
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    CREATE PUBLICATION supabase_realtime;
+  END IF;
+END $$;
 ALTER PUBLICATION supabase_realtime ADD TABLE project_comments;
