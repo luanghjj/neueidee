@@ -1,4 +1,4 @@
-const CACHE = 'spark-v1';
+const CACHE = 'spark-v2';
 const ASSETS = ['./', './index.html', './css/app.css', './js/data.js', './js/app.js', './manifest.json'];
 
 self.addEventListener('install', e => {
