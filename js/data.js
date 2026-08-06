@@ -37,34 +37,53 @@ const DB = {
       if (remoteIdeas && remoteIdeas.length) {
         const local = this.getIdeas();
         const mergedMap = new Map();
-        [...local, ...remoteIdeas].forEach(item => mergedMap.set(item.id, item));
+        [...local, ...remoteIdeas].forEach(item => {
+          mergedMap.set(item.id, {
+            ...item,
+            isPinned: item.isPinned !== undefined ? item.isPinned : item.pinned
+          });
+        });
         this.saveIdeas(Array.from(mergedMap.values()));
       }
     } catch (_) {}
+
     try {
       // Sync Projects
       const { data: remoteProjects } = await this.supabase.from('projects').select('*');
       if (remoteProjects && remoteProjects.length) {
         const local = this.getProjects();
         const mergedMap = new Map();
-        [...local, ...remoteProjects].forEach(item => mergedMap.set(item.id, item));
+        [...local, ...remoteProjects].forEach(item => {
+          mergedMap.set(item.id, {
+            ...item,
+            description: item.description || item.desc || ''
+          });
+        });
         this.saveProjects(Array.from(mergedMap.values()));
       }
     } catch (_) {}
+
+    await this.syncShares();
+    await this.syncComments();
+    this.initRealtime();
   },
 
   // ── SHARES (chia sẻ dự án theo nickname) ──
   getShares(){ return JSON.parse(localStorage.getItem('spark_shares')||'[]') },
   saveShares(list){ localStorage.setItem('spark_shares', JSON.stringify(list)) },
-  getSharedProjectIds(){ return this.getShares().filter(s=>s.sharedWith===this.getUser()).map(s=>s.projectId) },
+  getSharedProjectIds(){
+    const me = (this.getUser()||'').toLowerCase();
+    return this.getShares().filter(s=>(s.sharedWith||'').toLowerCase()===me || (s.owner||'').toLowerCase()===me).map(s=>s.projectId);
+  },
   isProjectShared(projectId){ return this.getShares().some(s=>s.projectId===projectId) },
 
   async shareProject(projectId, nickname){
     const name = (nickname||'').trim();
-    if(!name || name===this.getUser()) return null;
+    const me = this.getUser();
+    if(!name || name.toLowerCase()===me.toLowerCase()) return null;
     const list = this.getShares();
-    if(list.some(s=>s.projectId===projectId && s.sharedWith===name)) return null;
-    const share = { id:'sh_'+Date.now()+'_'+Math.random().toString(36).slice(2,8), projectId, owner:this.getUser(), sharedWith:name, createdAt:Date.now() };
+    if(list.some(s=>s.projectId===projectId && (s.sharedWith||'').toLowerCase()===name.toLowerCase())) return null;
+    const share = { id:'sh_'+Date.now()+'_'+Math.random().toString(36).slice(2,8), projectId, owner:me, sharedWith:name, createdAt:Date.now() };
     list.push(share);
     this.saveShares(list);
     if(this.supabase){
@@ -97,16 +116,17 @@ const DB = {
       this.saveShares(Array.from(mergedMap.values()));
 
       // Tải các project được share về máy
-      const incoming = data.filter(s=>s.sharedWith===me).map(s=>s.projectId);
+      const incoming = data.map(s=>s.projectId);
       if(incoming.length){
         const { data: remoteProjects } = await this.supabase.from('projects').select('*').in('id', incoming);
         if(remoteProjects && remoteProjects.length){
           const localProjects = this.getProjects();
           const pmap = new Map(localProjects.map(p=>[p.id,p]));
           remoteProjects.forEach(p=>{
-            const mapped = {...p, description: p.description || p.desc || null};
-            delete mapped.desc;
-            pmap.set(p.id, mapped);
+            pmap.set(p.id, {
+              ...p,
+              description: p.description || p.desc || ''
+            });
           });
           this.saveProjects(Array.from(pmap.values()));
         }
@@ -116,8 +136,9 @@ const DB = {
 
   async syncComments(){
     if(!this.supabase) return;
-    const ids = this.getSharedProjectIds();
-    if(!ids.length) return;
+    const projects = this.getProjects();
+    if(!projects.length) return;
+    const ids = projects.map(p=>p.id);
     try {
       const { data } = await this.supabase.from('project_comments').select('*').in('projectId', ids);
       if(!data || !data.length) return;

@@ -1534,11 +1534,15 @@ const App = {
 
     document.getElementById('settings-name').value = DB.getUser();
 
-    // AI Settings populate
+    // AI Settings populate (hide raw API key code to avoid leaking)
     const aiCfg = DB.getAISettings();
-    const epEl = document.getElementById('ai-endpoint'); if(epEl) epEl.value = aiCfg.endpoint;
-    const akEl = document.getElementById('ai-apikey'); if(akEl) akEl.value = aiCfg.apiKey;
-    const mdEl = document.getElementById('ai-model'); if(mdEl) mdEl.value = aiCfg.model;
+    const epEl = document.getElementById('ai-endpoint'); if(epEl) epEl.value = aiCfg.endpoint || '';
+    const akEl = document.getElementById('ai-apikey');
+    if(akEl){
+      akEl.value = '';
+      akEl.placeholder = '•••••••••••••••• (Standard-Schlüssel aktiv)';
+    }
+    const mdEl = document.getElementById('ai-model'); if(mdEl) mdEl.value = aiCfg.model || 'deepseek-v4-flash-free';
 
     const grid = document.getElementById('emoji-grid');
     const cur = DB.getUserEmoji();
@@ -1559,6 +1563,7 @@ const App = {
       const n = document.getElementById('settings-name').value.trim();
       if(!n){ this.toast('Namen eingeben'); return; }
       DB.setUser(n);
+      DB.syncShares().then(() => this.renderProjects());
       this.renderProfile(); this.renderOverview();
       this.toast('Profil gespeichert ✅');
     };
@@ -1567,11 +1572,14 @@ const App = {
     const btnSaveAI = document.getElementById('btn-save-ai');
     if(btnSaveAI){
       btnSaveAI.onclick = () => {
-        const ep = document.getElementById('ai-endpoint').value.trim();
-        const ak = document.getElementById('ai-apikey').value.trim();
-        const md = document.getElementById('ai-model').value.trim() || 'deepseek-v4-flash-free';
-        DB.setAISettings({ endpoint: ep, apiKey: ak, model: md });
-        this.toast('KI Cấu hình đã lưu ✅');
+        const ep = document.getElementById('ai-endpoint')?.value.trim();
+        const ak = document.getElementById('ai-apikey')?.value.trim();
+        const md = document.getElementById('ai-model')?.value.trim() || 'deepseek-v4-flash-free';
+        const patch = { model: md };
+        if(ep) patch.endpoint = ep;
+        if(ak) patch.apiKey = ak;
+        DB.setAISettings(patch);
+        this.toast('KI-Einstellungen gespeichert ✅');
       };
     }
 

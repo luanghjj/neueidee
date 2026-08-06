@@ -467,25 +467,38 @@ tailwind.config = {
           <div id="emoji-grid" class="flex flex-wrap gap-2"></div>
         </div>
         <div class="px-4 py-4 border-b border-border space-y-3">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary" style="font-size:20px" aria-hidden="true">auto_awesome</span>
-            <p class="text-xs font-semibold uppercase tracking-widest text-dim">KI-Verbindung</p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary" style="font-size:20px" aria-hidden="true">auto_awesome</span>
+              <p class="text-xs font-semibold uppercase tracking-widest text-dim">KI-Modell &amp; Assistent</p>
+            </div>
+            <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">Aktiv</span>
           </div>
           <div>
-            <label class="text-xs text-secondary block mb-1">API-Endpunkt (URL)</label>
-            <input type="text" id="ai-endpoint" class="inp text-sm" placeholder="https://opencode.ai/zen/v1">
-            <p class="text-[11px] text-dim mt-1">Kompatibler Endpunkt für Textgenerierung (z. B. Local, OpenCode, OpenRouter)</p>
-          </div>
-          <div>
-            <label class="text-xs text-secondary block mb-1">API-Schlüssel (falls erforderlich)</label>
-            <input type="password" id="ai-apikey" class="inp text-sm" placeholder="sk-...">
-          </div>
-          <div>
-            <label class="text-xs text-secondary block mb-1">Modellname</label>
+            <label class="text-xs text-secondary block mb-1">KI-Modellname</label>
             <input type="text" id="ai-model" class="inp text-sm" placeholder="deepseek-v4-flash-free">
+            <p class="text-[11px] text-dim mt-1">Standardsystem: DeepSeek V4 Flash Free</p>
           </div>
-          <button id="btn-save-ai" class="btn-primary w-full py-3 flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined" style="font-size:18px">save</span> KI-Einstellungen speichern
+          
+          <!-- Optional Advanced Settings -->
+          <details class="text-xs text-secondary pt-1">
+            <summary class="cursor-pointer font-medium text-dim hover:text-primary transition-colors py-1 flex items-center gap-1 select-none">
+              <span>⚙️ Erweiterte API-Einstellungen (Optional)</span>
+            </summary>
+            <div class="space-y-3 pt-3 border-t border-border mt-2">
+              <div>
+                <label class="text-[11px] text-secondary block mb-1">API-Endpunkt (URL)</label>
+                <input type="text" id="ai-endpoint" class="inp text-xs" placeholder="https://opencode.ai/zen/v1">
+              </div>
+              <div>
+                <label class="text-[11px] text-secondary block mb-1">Eigener API-Schlüssel</label>
+                <input type="password" id="ai-apikey" class="inp text-xs" placeholder="•••••••••••••••• (Standard-Schlüssel)"/>
+              </div>
+            </div>
+          </details>
+
+          <button id="btn-save-ai" class="btn-primary w-full py-3 flex items-center justify-center gap-2 mt-2">
+            <span class="material-symbols-outlined" style="font-size:18px">save</span> KI-Modell speichern
           </button>
         </div>
         <div class="px-4 py-4 space-y-2">
@@ -783,7 +796,7 @@ tailwind.config = {
 <div id="toast" class="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/data.js?v=19"></script>
-<script src="js/app.js?v=19"></script>
+<script src="js/data.js?v=20"></script>
+<script src="js/app.js?v=20"></script>
 </body>
 </html>
