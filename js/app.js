@@ -214,10 +214,10 @@ const App = {
   handleLiveShare(s){
     if(!s) return;
     const proj = DB.getProject(s.projectId);
-    this.toast(`🔔 ${s.owner} đã chia sẻ dự án "${proj ? proj.name : 'mới'}" với bạn`, 3200);
+    this.toast(`🔔 ${s.owner} hat das Projekt "${proj ? proj.name : 'neu'}" mit dir geteilt`, 3200);
     if(this.state.currentProjectId === s.projectId) this.renderShareSection(s.projectId);
     if('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker){
-      try { navigator.serviceWorker.ready.then(r => r.showNotification('Spark 🔔', { body: `${s.owner} đã chia sẻ dự án với bạn`, icon:'./assets/icon-192.png', tag:'spark-share' })).catch(()=>{}); } catch(_) {}
+      try { navigator.serviceWorker.ready.then(r => r.showNotification('Spark 🔔', { body: `${s.owner} hat ein Projekt mit dir geteilt`, icon:'./assets/icon-192.png', tag:'spark-share' })).catch(()=>{}); } catch(_) {}
     }
   },
 
@@ -236,7 +236,7 @@ const App = {
     const notifs = DB.getNotifications();
     if(!list) return;
     if(!notifs.length){
-      list.innerHTML = `<p class="text-sm text-secondary italic py-6 text-center border border-dashed border-border rounded-xl">Chưa có thông báo nào.</p>`;
+      list.innerHTML = `<p class="text-sm text-secondary italic py-6 text-center border border-dashed border-border rounded-xl">Keine Benachrichtigungen.</p>`;
       return;
     }
     list.innerHTML = notifs.map(n => `
@@ -644,8 +644,8 @@ const App = {
           ${this.stagePill(i.stage)}
           ${i.prototypeHtml?'<span class="tag text-[11px] flex items-center gap-1 bg-surface-mid border border-border"><span class="material-symbols-outlined" style="font-size:12px">view_quilt</span> Prototyp</span>':''}
           ${tags}${more}${imgCount}
-          <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2.5 !text-xs ml-auto flex items-center gap-1 font-semibold" title="Chia sẻ &amp; Live Chat">
-            <span class="material-symbols-outlined" style="font-size:14px">handshake</span> Chia sẻ
+          <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2.5 !text-xs ml-auto flex items-center gap-1 font-semibold" title="Teilen &amp; Live-Chat">
+            <span class="material-symbols-outlined" style="font-size:14px">handshake</span> Teilen
           </button>
         </div>
       </div>
@@ -661,7 +661,7 @@ const App = {
       <div class="stage-bar" style="background:${st.color}"></div>
       <div class="pl-2 flex items-center gap-3">
         <p class="text-sm font-semibold text-primary truncate flex-1">${this.esc(title)}</p>
-        <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2 !text-xs flex items-center gap-1 font-semibold" title="Chia sẻ &amp; Live Chat">
+        <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2 !text-xs flex items-center gap-1 font-semibold" title="Teilen &amp; Live-Chat">
           <span class="material-symbols-outlined" style="font-size:14px">handshake</span>
         </button>
         ${this.stagePill(i.stage)}
@@ -687,7 +687,7 @@ const App = {
       </div>
       <div class="pl-2 mt-2 flex items-center gap-2 flex-wrap">
         ${tags}
-        <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2.5 !text-xs ml-auto flex items-center gap-1 font-semibold" title="Chia sẻ &amp; Live Chat">
+        <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2.5 !text-xs ml-auto flex items-center gap-1 font-semibold" title="Teilen &amp; Live-Chat">
           <span class="material-symbols-outlined" style="font-size:14px">handshake</span>
         </button>
       </div>
@@ -830,7 +830,7 @@ const App = {
     rec.onstart = () => {
       this.state.voiceOn = true;
       if(btn) btn.classList.add('recording');
-      if(hint) hint.textContent = '🎙️ Höre zu… / Đang lắng nghe…';
+      if(hint) hint.textContent = '🎙️ Höre zu…';
     };
 
     rec.onresult = e => {
@@ -849,7 +849,7 @@ const App = {
 
     rec.onerror = ev => {
       if(ev.error === 'no-speech') return; // Silence pause is normal
-      if(hint) hint.textContent = ev.error==='not-allowed' ? '❌ Mikrofon verweigert / Từ chối mic' : '❌ Fehler: ' + ev.error;
+      if(hint) hint.textContent = ev.error==='not-allowed' ? '❌ Mikrofon verweigert' : '❌ Fehler: ' + ev.error;
     };
 
     rec.onend = () => {
@@ -1281,7 +1281,7 @@ const App = {
           <div class="flex-1 min-w-0">
             <div class="flex items-start justify-between gap-2">
               <p class="text-[15px] font-semibold leading-tight line-clamp-2">${this.esc(p.name)}</p>
-              <button class="btn-secondary !py-1 !px-2.5 !text-xs flex items-center gap-1 font-bold text-primary flex-shrink-0" onclick="event.stopPropagation(); App.openShareCenter('${p.id}')" title="Chia sẻ &amp; Live Chat">
+              <button class="btn-secondary !py-1 !px-2.5 !text-xs flex items-center gap-1 font-bold text-primary flex-shrink-0" onclick="event.stopPropagation(); App.openShareCenter('${p.id}')" title="Teilen &amp; Live-Chat">
                 <span class="material-symbols-outlined" style="font-size:14px">handshake</span> Share
               </button>
             </div>
@@ -1345,10 +1345,10 @@ const App = {
       btnShareSubmit.onclick = async () => {
         const nick = document.getElementById('share-center-nick')?.value.trim();
         const projId = document.getElementById('share-center-project-select')?.value;
-        if(!nick){ this.toast('Nhập Nickname bạn bè 👤'); return; }
-        if(!projId){ this.toast('Tạo hoặc chọn dự án 📁'); return; }
+        if(!nick){ this.toast('Nickname des Freundes eingeben 👤'); return; }
+        if(!projId){ this.toast('Erstelle oder wähle ein Projekt 📁'); return; }
         await DB.shareProject(projId, nick);
-        this.toast(`Đã chia sẻ với "${nick}" — người đó sẽ nhận thông báo 🔔`);
+        this.toast(`Mit "${nick}" geteilt — Empfänger wird benachrichtigt 🔔`);
         this.closeModal('modal-share-center');
         this.openProjectDetail(projId);
       };
@@ -1638,7 +1638,7 @@ const App = {
     const sel = document.getElementById('share-center-project-select');
     if(sel){
       if(!projects.length){
-        sel.innerHTML = `<option value="">Chưa có dự án nào — tạo dự án trước</option>`;
+        sel.innerHTML = `<option value="">Keine Projekte vorhanden — erstelle zuerst ein Projekt</option>`;
       } else {
         sel.innerHTML = projects.map(p=>`<option value="${p.id}" ${p.id===(defaultProjectId||projects[0]?.id)?'selected':''}>${this.esc(p.name)}</option>`).join('');
       }
@@ -1653,12 +1653,12 @@ const App = {
     const me = DB.getUser();
     const shares = DB.getShares();
     if(!shares.length){
-      wrap.innerHTML = `<p class="text-xs text-secondary italic py-3 text-center border border-dashed border-border rounded-xl">Chưa có dự án nào được chia sẻ. Hãy nhập Nickname bạn bè ở trên để bắt đầu!</p>`;
+      wrap.innerHTML = `<p class="text-xs text-secondary italic py-3 text-center border border-dashed border-border rounded-xl">Noch keine geteilten Projekte. Gib oben den Nickname eines Freundes ein, um zu starten!</p>`;
       return;
     }
     wrap.innerHTML = shares.map(s => {
       const proj = DB.getProject(s.projectId);
-      const pName = proj ? proj.name : 'Dự án';
+      const pName = proj ? proj.name : 'Projekt';
       return `
       <div class="flex items-center justify-between bg-white border border-border rounded-xl p-3 shadow-ambient">
         <div class="flex items-center gap-3 min-w-0">
@@ -1667,7 +1667,7 @@ const App = {
           </div>
           <div class="min-w-0 flex-1">
             <p class="text-sm font-bold truncate text-primary">${this.esc(pName)}</p>
-            <p class="text-xs text-secondary">👥 Chia sẻ với <b>${this.esc(s.sharedWith)}</b> ${s.owner!==me ? `(Tạo bởi ${this.esc(s.owner)})` : ''}</p>
+            <p class="text-xs text-secondary">👥 Geteilt mit <b>${this.esc(s.sharedWith)}</b> ${s.owner!==me ? `(erstellt von ${this.esc(s.owner)})` : ''}</p>
           </div>
         </div>
         <button class="btn-primary text-xs py-2 px-3 flex-shrink-0 flex items-center gap-1 open-share-chat-btn" data-proj="${s.projectId}">

@@ -796,8 +796,8 @@ tailwind.config = {
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-primary" style="font-size:24px">share</span>
         <div>
-          <h3 class="text-lg font-bold">Dự án chia sẻ &amp; Realtime Chat</h3>
-          <p class="text-xs text-secondary">Nhập Nickname bạn bè để cùng làm việc &amp; trao đổi live</p>
+          <h3 class="text-lg font-bold">Geteiltes Projekt &amp; Realtime-Chat</h3>
+          <p class="text-xs text-secondary">Gib den Nickname eines Freundes ein, um gemeinsam zu arbeiten &amp; live zu chatten</p>
         </div>
       </div>
       <button class="icon-btn-44 rounded-full bg-surface-mid text-secondary modal-close" data-modal="modal-share-center" aria-label="Schließen">
@@ -808,23 +808,23 @@ tailwind.config = {
     <div class="p-5 space-y-4 overflow-y-auto max-h-[80vh]">
       <!-- Quick Share Input Form -->
       <div class="bg-surface-mid border border-border rounded-2xl p-4 space-y-3 shadow-ambient">
-        <label class="text-xs font-bold uppercase tracking-wider text-dim block">1. Nhập Nickname bạn bè để chia sẻ</label>
-        <input type="text" id="share-center-nick" class="inp text-sm w-full" placeholder="Ví dụ: Linh, Nam, Alex..." autocomplete="off">
+        <label class="text-xs font-bold uppercase tracking-wider text-dim block">1. Nickname des Freundes eingeben</label>
+        <input type="text" id="share-center-nick" class="inp text-sm w-full" placeholder="Z. B. Linh, Nam, Alex..." autocomplete="off">
         
-        <label class="text-xs font-bold uppercase tracking-wider text-dim block pt-1">2. Chọn dự án muốn chia sẻ</label>
+        <label class="text-xs font-bold uppercase tracking-wider text-dim block pt-1">2. Projekt zum Teilen auswählen</label>
         <select id="share-center-project-select" class="inp text-sm w-full">
           <!-- Populated dynamically -->
         </select>
         
         <button id="btn-share-center-submit" class="btn-primary w-full py-3 flex items-center justify-center gap-2 mt-2">
           <span class="material-symbols-outlined" style="font-size:18px">send</span>
-          <span>🤝 Chia sẻ &amp; Mở Chat Live ngay</span>
+          <span>🤝 Teilen &amp; Live-Chat starten</span>
         </button>
       </div>
 
       <!-- List of Shared Projects -->
       <div>
-        <p class="text-xs font-bold uppercase tracking-wider text-dim mb-3">Các dự án đang được chia sẻ</p>
+        <p class="text-xs font-bold uppercase tracking-wider text-dim mb-3">Geteilte Projekte</p>
         <div id="shared-projects-list" class="space-y-2"></div>
       </div>
     </div>
@@ -839,10 +839,10 @@ tailwind.config = {
     <div class="flex justify-between items-center px-5 pb-3 border-b border-border flex-shrink-0">
       <div class="flex items-center gap-2">
         <span class="material-symbols-outlined text-primary" style="font-size:22px">notifications</span>
-        <h3 class="text-lg font-bold">Thông báo</h3>
+        <h3 class="text-lg font-bold">Benachrichtigungen</h3>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btn-notif-clear" class="text-xs text-secondary hover:text-red-500">Xoá tất cả</button>
+        <button id="btn-notif-clear" class="text-xs text-secondary hover:text-red-500">Alle löschen</button>
         <button class="icon-btn-44 rounded-full bg-surface-mid text-secondary modal-close" data-modal="modal-notif-center" aria-label="Schließen">
           <span class="material-symbols-outlined" style="font-size:20px">close</span>
         </button>
@@ -869,7 +869,7 @@ tailwind.config = {
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 rounded-xl bg-primary text-on-primary flex items-center justify-center font-bold text-lg">⚡</div>
     <div>
-      <p class="text-xs font-bold text-primary">Auf iPhone installieren / Thêm vào màn hình chính</p>
+      <p class="text-xs font-bold text-primary">Auf iPhone installieren</p>
       <p class="text-[11px] text-secondary">Tippe auf <span class="font-semibold">Teilen</span> <span class="material-symbols-outlined text-[13px] inline align-text-bottom">ios_share</span> &amp; wähle <span class="font-semibold">"Zum Home-Bildschirm"</span>.</p>
     </div>
   </div>

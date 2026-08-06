@@ -214,7 +214,7 @@ const DB = {
     if((s.sharedWith||'').toLowerCase() !== (me||'').toLowerCase()) return;
     if((s.owner||'').toLowerCase() === (me||'').toLowerCase()) return;
     const notif = { id:'notif_sh_'+s.id, type:'share', projectId:s.projectId, actor:s.owner,
-      text:`${s.owner||'Ai đó'} đã chia sẻ dự án với bạn`, ts:s.createdAt || Date.now(), read:false };
+      text:`${s.owner||'Jemand'} hat ein Projekt mit dir geteilt`, ts:s.createdAt || Date.now(), read:false };
     this.addNotification(notif);
   },
 
