@@ -269,7 +269,6 @@ tailwind.config = {
       <button class="side-btn" data-view="overview"><span class="material-symbols-outlined" aria-hidden="true">home</span> Übersicht</button>
       <button class="side-btn" data-view="ideas"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span> Ideen</button>
       <button class="side-btn" data-view="journey"><span class="material-symbols-outlined" aria-hidden="true">rocket_launch</span> Verlauf</button>
-      <button class="side-btn text-primary font-bold" onclick="App.openShareCenter()"><span class="material-symbols-outlined text-primary" aria-hidden="true">handshake</span> Chia sẻ &amp; Live Chat 💬</button>
       <button class="side-btn" data-view="profile"><span class="material-symbols-outlined" aria-hidden="true">person</span> Profil</button>
     </nav>
     <div class="p-3 border-t border-border flex-shrink-0">
@@ -366,10 +365,6 @@ tailwind.config = {
             <p class="text-sm text-secondary mt-1"><span id="idea-count">0</span> gesamt</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="App.openShareCenter()" class="btn-secondary py-2 px-3 text-xs flex items-center gap-1">
-              <span class="material-symbols-outlined text-primary" style="font-size:16px">handshake</span>
-              <span class="font-bold text-primary">Chia sẻ &amp; Live Chat</span>
-            </button>
             <div class="view-toggle flex gap-1 bg-surface-mid rounded-xl p-1">
             <button id="view-list-btn" class="active" onclick="App.setIdeaView('list')" aria-label="Listenansicht">
               <span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">view_agenda</span>
@@ -424,10 +419,6 @@ tailwind.config = {
             <p class="text-sm text-secondary mt-1"><span id="proj-count">0</span> Projekte</p>
           </div>
           <div class="flex items-center gap-2">
-            <button onclick="App.openShareCenter()" class="btn-secondary py-2 px-3 text-sm rounded-xl flex items-center gap-1.5 border border-primary/20 text-primary bg-primary/5">
-              <span class="material-symbols-outlined" style="font-size:18px">share</span>
-              <span>🤝 Geteilt &amp; Chat</span>
-            </button>
             <button onclick="App.openProjectModal()" class="btn-primary py-2 px-4 text-sm rounded-xl">
               <span class="material-symbols-outlined" style="font-size:16px">add</span> Neu
             </button>
