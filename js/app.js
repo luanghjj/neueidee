@@ -512,6 +512,26 @@ const App = {
     return `<span class="${cls}" ${clickable?`data-tag="${this.escAttr(t)}"`:''}>#${this.esc(t)}</span>`;
   },
 
+  getIdeaTitle(content){
+    if(!content) return 'Unbenannte Idee';
+    const lines = content.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(!lines.length) return 'Unbenannte Idee';
+    let first = lines[0];
+    first = first.replace(/^([#*_\-\s>]+)/, '').replace(/([*_]+)$/, '').trim();
+    if(!first) first = lines[0];
+    return first.length > 70 ? first.slice(0, 70) + '…' : first;
+  },
+
+  getIdeaPreview(content){
+    if(!content) return '';
+    const lines = content.split('\n').map(l=>l.trim()).filter(Boolean);
+    if(lines.length <= 1) return '';
+    let rest = lines.slice(1).join(' ').trim();
+    rest = rest.replace(/^([#*_\-\s>]+)/, '').replace(/([*_]+)/g, '').trim();
+    if(!rest) return '';
+    return rest.length > 100 ? rest.slice(0, 100) + '…' : rest;
+  },
+
   ideaListCard(i, idx){
     const st = this.stages[i.stage] || this.stages.spark;
     const tagsAll = i.tags||[];
@@ -520,15 +540,19 @@ const App = {
     const delay = this.reduceMotion()?0:Math.min(idx*40,300);
     const img = (i.images&&i.images[0]) ? `<img class="idea-card-img" src="${i.images[0]}" alt="" loading="lazy">` : '';
     const imgCount = (i.images&&i.images.length>1) ? `<span class="text-xs text-secondary flex items-center gap-0.5"><span class="material-symbols-outlined" style="font-size:13px" aria-hidden="true">image</span>${i.images.length}</span>` : '';
+    const title = this.getIdeaTitle(i.content);
+    const preview = this.getIdeaPreview(i.content);
+
     return `
-    <div class="idea-card anim-up" role="button" tabindex="0" aria-label="Idee: ${this.escAttr(this.snippet(i.content,60))} — ${st.label}" data-id="${i.id}" style="animation-delay:${delay}ms">
+    <div class="idea-card anim-up" role="button" tabindex="0" aria-label="Idee: ${this.escAttr(title)} — ${st.label}" data-id="${i.id}" style="animation-delay:${delay}ms">
       <div class="stage-bar" style="background:${st.color}"></div>
       <div class="pl-2">
         ${i.isPinned?'<span class="material-symbols-outlined text-secondary float-right" style="font-size:16px" aria-hidden="true">push_pin</span>':''}
         ${i.projectId?'<span class="stage-pill shipped float-right" style="margin-left:4px">umgewandelt</span>':''}
         ${img}
-        <p class="text-[15px] leading-snug text-primary font-medium">${this.esc(i.content)}</p>
-        <div class="flex items-center gap-2 mt-3 pt-3 border-t border-border flex-wrap">
+        <h3 class="text-[15px] leading-snug text-primary font-bold tracking-tight mb-1">${this.esc(title)}</h3>
+        ${preview ? `<p class="text-xs leading-relaxed text-secondary line-clamp-2 mb-2">${this.esc(preview)}</p>` : ''}
+        <div class="flex items-center gap-2 mt-2 pt-2 border-t border-border flex-wrap">
           ${this.stagePill(i.stage)}
           ${i.prototypeHtml?'<span class="tag text-[11px] flex items-center gap-1 bg-surface-mid border border-border"><span class="material-symbols-outlined" style="font-size:12px">view_quilt</span> Prototyp</span>':''}
           ${tags}${more}${imgCount}
@@ -541,11 +565,12 @@ const App = {
   ideaCompactCard(i, idx){
     const st = this.stages[i.stage] || this.stages.spark;
     const delay = this.reduceMotion()?0:Math.min(idx*30,300);
+    const title = this.getIdeaTitle(i.content);
     return `
-    <div class="idea-card anim-up !py-3" role="button" tabindex="0" aria-label="Idee: ${this.escAttr(this.snippet(i.content,60))} — ${st.label}" data-id="${i.id}" style="animation-delay:${delay}ms">
+    <div class="idea-card anim-up !py-3" role="button" tabindex="0" aria-label="Idee: ${this.escAttr(title)} — ${st.label}" data-id="${i.id}" style="animation-delay:${delay}ms">
       <div class="stage-bar" style="background:${st.color}"></div>
       <div class="pl-2 flex items-center gap-3">
-        <p class="text-sm text-primary truncate flex-1">${this.esc(this.snippet(i.content,60))}</p>
+        <p class="text-sm font-semibold text-primary truncate flex-1">${this.esc(title)}</p>
         <span class="text-xs text-secondary flex-shrink-0">${this.ago(i.createdAt)}</span>
         ${this.stagePill(i.stage)}
       </div>
@@ -557,13 +582,16 @@ const App = {
     const tags = (i.tags||[]).slice(0,2).map(t=>this.tagChip(t,true)).join('');
     const delay = this.reduceMotion()?0:Math.min(idx*40,300);
     const img = (i.images&&i.images[0]) ? `<img class="idea-card-img" src="${i.images[0]}" alt="" loading="lazy" style="height:90px">` : '';
+    const title = this.getIdeaTitle(i.content);
+    const preview = this.getIdeaPreview(i.content);
     return `
-    <div class="idea-card anim-up flex flex-col justify-between min-h-[150px]" role="button" tabindex="0" aria-label="Idee: ${this.escAttr(this.snippet(i.content,60))} — ${st.label}" data-id="${i.id}" style="animation-delay:${delay}ms">
+    <div class="idea-card anim-up flex flex-col justify-between min-h-[140px]" role="button" tabindex="0" aria-label="Idee: ${this.escAttr(title)} — ${st.label}" data-id="${i.id}" style="animation-delay:${delay}ms">
       <div class="stage-bar" style="background:${st.color}"></div>
       <div class="pl-2 flex-1">
         <div class="mb-2">${this.stagePill(i.stage)}</div>
         ${img}
-        <p class="text-sm leading-snug text-primary font-medium line-clamp-4">${this.esc(i.content)}</p>
+        <h3 class="text-sm font-bold text-primary mb-1 leading-tight">${this.esc(title)}</h3>
+        ${preview ? `<p class="text-xs text-secondary line-clamp-2">${this.esc(preview)}</p>` : ''}
       </div>
       <div class="pl-2 mt-2 flex items-center gap-2 flex-wrap">
         ${tags}
@@ -618,10 +646,13 @@ const App = {
     const prev = this.stageOrder[idx-1], next = this.stageOrder[idx+1];
     const tags = (i.tags||[]).slice(0,2).map(t=>this.tagChip(t,false)).join('');
     const img = (i.images&&i.images[0]) ? `<img src="${i.images[0]}" class="idea-card-img" style="height:80px;margin-bottom:8px" alt="" loading="lazy">` : '';
+    const title = this.getIdeaTitle(i.content);
+    const preview = this.getIdeaPreview(i.content);
     return `
     <div class="board-card" draggable="true" data-id="${i.id}">
       ${img}
-      <p class="text-sm leading-snug text-primary font-medium line-clamp-3 board-open cursor-pointer" data-id="${i.id}">${this.esc(i.content)}</p>
+      <h3 class="text-sm font-bold text-primary board-open cursor-pointer mb-1" data-id="${i.id}">${this.esc(title)}</h3>
+      ${preview ? `<p class="text-xs text-secondary line-clamp-2 board-open cursor-pointer mb-2" data-id="${i.id}">${this.esc(preview)}</p>` : ''}
       <div class="flex items-center gap-1.5 mt-2 flex-wrap">${tags}${i.isPinned?'<span class="material-symbols-outlined text-secondary" style="font-size:14px" aria-hidden="true">push_pin</span>':''}</div>
       <div class="board-move">
         <button class="board-move-prev" data-id="${i.id}" ${prev?'':'disabled'} aria-label="${prev?'Zu '+this.stages[prev].label+' verschieben':'Erste Phase'}"><span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">chevron_left</span></button>
@@ -981,14 +1012,14 @@ const App = {
     // Bind AI Chat events
     this.bindAIChatEvents(id, idea);
     document.getElementById('btn-idea-share')?.addEventListener('click', () => {
-      const stage = this.stages[idea.stage]?.label || '';
-      const tags = (idea.tags||[]).map(t=>'#'+t).join(' ');
-      const md = `**${stage}** ${tags}\n\n${idea.content}\n\n_${new Date(idea.createdAt).toLocaleDateString('de-DE')}_`;
-      if(navigator.share){
-        navigator.share({ title:'Spark Idee', text:md }).catch(()=>{});
-      } else {
-        navigator.clipboard.writeText(md).then(() => this.toast('📋 Idee kopiert')).catch(() => this.toast('Kopieren fehlgeschlagen'));
+      let projId = idea.projectId;
+      if(!projId){
+        const newP = DB.addProject({ name: this.getIdeaTitle(idea.content), desc: idea.content, status: 'in_progress', tags: idea.tags||[] });
+        DB.updateIdea(id, { projectId: newP.id });
+        projId = newP.id;
       }
+      this.closeModal('modal-idea');
+      this.openShareCenter(projId);
     });
     this.openModal('modal-idea');
   },
@@ -1212,6 +1243,20 @@ const App = {
       if(this.state.projFilter!=='all'){ this.state.projFilter='all'; document.querySelectorAll('#view-journey .chip').forEach(c=>c.classList.toggle('active',c.dataset.status==='all')); this.renderProjects(); }
       else this.openProjectModal();
     });
+
+    const btnShareSubmit = document.getElementById('btn-share-center-submit');
+    if(btnShareSubmit){
+      btnShareSubmit.onclick = async () => {
+        const nick = document.getElementById('share-center-nick')?.value.trim();
+        const projId = document.getElementById('share-center-project-select')?.value;
+        if(!nick){ this.toast('Nhập Nickname bạn bè 👤'); return; }
+        if(!projId){ this.toast('Tạo hoặc chọn dự án 📁'); return; }
+        await DB.shareProject(projId, nick);
+        this.toast(`Đã chia sẻ với "${nick}" 🤝`);
+        this.closeModal('modal-share-center');
+        this.openProjectDetail(projId);
+      };
+    }
   },
 
   addProjTag(val){
@@ -1488,6 +1533,58 @@ const App = {
         this.renderShareSection(projectId);
         this.renderProjects();
         this.toast('Teilung entfernt');
+      };
+    });
+  },
+
+  openShareCenter(defaultProjectId=null){
+    let projects = DB.getProjects();
+    const sel = document.getElementById('share-center-project-select');
+    if(sel){
+      if(!projects.length){
+        const defaultProj = DB.addProject({ name: 'Dự án mới chia sẻ', desc: 'Dự án cộng tác Realtime', status: 'in_progress', tags: ['share'] });
+        projects = [defaultProj];
+        defaultProjectId = defaultProj.id;
+      }
+      sel.innerHTML = projects.map(p=>`<option value="${p.id}" ${p.id===(defaultProjectId||projects[0]?.id)?'selected':''}>${this.esc(p.name)}</option>`).join('');
+    }
+    this.renderSharedCenterList();
+    this.openModal('modal-share-center');
+  },
+
+  renderSharedCenterList(){
+    const wrap = document.getElementById('shared-projects-list');
+    if(!wrap) return;
+    const me = DB.getUser();
+    const shares = DB.getShares();
+    if(!shares.length){
+      wrap.innerHTML = `<p class="text-xs text-secondary italic py-3 text-center border border-dashed border-border rounded-xl">Chưa có dự án nào được chia sẻ. Hãy nhập Nickname bạn bè ở trên để bắt đầu!</p>`;
+      return;
+    }
+    wrap.innerHTML = shares.map(s => {
+      const proj = DB.getProject(s.projectId);
+      const pName = proj ? proj.name : 'Dự án';
+      return `
+      <div class="flex items-center justify-between bg-white border border-border rounded-xl p-3 shadow-ambient">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">
+            🤝
+          </div>
+          <div class="min-w-0 flex-1">
+            <p class="text-sm font-bold truncate text-primary">${this.esc(pName)}</p>
+            <p class="text-xs text-secondary">👥 Chia sẻ với <b>${this.esc(s.sharedWith)}</b> ${s.owner!==me ? `(Tạo bởi ${this.esc(s.owner)})` : ''}</p>
+          </div>
+        </div>
+        <button class="btn-primary text-xs py-2 px-3 flex-shrink-0 flex items-center gap-1 open-share-chat-btn" data-proj="${s.projectId}">
+          <span>💬 Chat Live</span>
+        </button>
+      </div>`;
+    }).join('');
+
+    wrap.querySelectorAll('.open-share-chat-btn').forEach(btn => {
+      btn.onclick = () => {
+        this.closeModal('modal-share-center');
+        this.openProjectDetail(btn.dataset.proj);
       };
     });
   },
