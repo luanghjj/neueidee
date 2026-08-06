@@ -91,6 +91,7 @@ CREATE POLICY "Public access project_comments" ON project_comments FOR ALL USING
 
 -- ==========================================
 -- 7. Bật Realtime cho bảng bình luận (chat live)
+--    + bảng shares (thông báo khi được chia sẻ)
 -- ==========================================
 DO $$
 BEGIN
@@ -99,3 +100,4 @@ BEGIN
   END IF;
 END $$;
 ALTER PUBLICATION supabase_realtime ADD TABLE project_comments;
+ALTER PUBLICATION supabase_realtime ADD TABLE shares;

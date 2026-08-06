@@ -12,6 +12,8 @@ try {
 const DB = {
   supabase: _sbClient,
   onLiveComment: null,
+  onLiveShare: null,
+  onNotification: null,
 
   // Chuyển project (JS) → payload khớp schema Supabase (bảng có cột "desc", không có "description")
   projectToRow(p){
@@ -112,8 +114,15 @@ const DB = {
       if(!data) return;
       const local = this.getShares();
       const mergedMap = new Map(local.map(s=>[s.id,s]));
-      data.forEach(s=>mergedMap.set(s.id,s));
+      const freshIncoming = [];
+      data.forEach(s=>{
+        const existed = mergedMap.has(s.id);
+        mergedMap.set(s.id,s);
+        // Share mới dành cho mình → tạo thông báo
+        if(!existed && (s.sharedWith||'').toLowerCase()===me.toLowerCase()) freshIncoming.push(s);
+      });
       this.saveShares(Array.from(mergedMap.values()));
+      freshIncoming.forEach(s => this.notifyShare(s));
 
       // Tải các project được share về máy
       const incoming = data.map(s=>s.projectId);
@@ -150,17 +159,63 @@ const DB = {
     } catch(_) {}
   },
 
-  // ── REALTIME (chat live) ──
+  // ── REALTIME (chat live + share) ──
   initRealtime(){
-    if(!this.supabase || this._rtChannel) return;
+    if(!this.supabase) return;
+    const me = (this.getUser()||'').toLowerCase();
     try {
-      this._rtChannel = this.supabase
-        .channel('spark-project-chat')
-        .on('postgres_changes', { event:'INSERT', schema:'public', table:'project_comments' }, payload => {
-          this.handleLiveComment(payload.new);
-        })
-        .subscribe();
+      if(!this._rtChannel){
+        this._rtChannel = this.supabase
+          .channel('spark-project-chat')
+          .on('postgres_changes', { event:'INSERT', schema:'public', table:'project_comments' }, payload => {
+            this.handleLiveComment(payload.new);
+          })
+          .subscribe();
+      }
+      // Realtime nhận thông báo khi có người share project cho mình
+      if(me && !this._rtShareChannel){
+        this._rtShareChannel = this.supabase
+          .channel('spark-share-notify')
+          .on('postgres_changes', { event:'INSERT', schema:'public', table:'shares', filter:`sharedWith=eq.${me}` }, payload => {
+            this.handleLiveShare(payload.new);
+          })
+          .subscribe();
+      }
     } catch(_) {}
+  },
+
+  async handleLiveShare(s){
+    if(!s || !s.id) return;
+    const me = this.getUser();
+    const meLow = (me||'').toLowerCase();
+    const involved = (s.sharedWith||'').toLowerCase()===meLow || (s.owner||'').toLowerCase()===meLow;
+    if(!involved) return;
+    const local = this.getShares();
+    if(local.some(x=>x.id===s.id)) return;
+    local.push(s);
+    this.saveShares(local);
+    // Tải project được share về máy ngay
+    try {
+      if(this.supabase){
+        const { data: p } = await this.supabase.from('projects').select('*').eq('id', s.projectId).single();
+        if(p){
+          const all = this.getProjects();
+          if(!all.some(x=>x.id===p.id)) this.saveProjects([...all, { ...p, description: p.description || p.desc || '' }]);
+        }
+      }
+    } catch(_) {}
+    this.notifyShare(s);
+    if(this.onLiveShare) this.onLiveShare(s);
+  },
+
+  notifyShare(s){
+    if(!s) return;
+    const me = this.getUser();
+    if((s.sharedWith||'').toLowerCase() !== (me||'').toLowerCase()) return;
+    if((s.owner||'').toLowerCase() === (me||'').toLowerCase()) return;
+    const notif = { id:'notif_sh_'+s.id, type:'share', projectId:s.projectId, actor:s.owner,
+      text:`${s.owner||'Ai đó'} đã chia sẻ dự án với bạn`, ts:s.createdAt || Date.now(), read:false };
+    this.addNotification(notif);
   },
 
   handleLiveComment(c){
@@ -169,8 +224,37 @@ const DB = {
     if(all.some(x=>x.id===c.id)) return;
     all.push({ id:c.id, projectId:c.projectId, author:c.author, content:c.content, createdAt:c.createdAt });
     this.saveComments(all);
+    // Thông báo khi người khác comment
+    const me = this.getUser();
+    if(c.author && c.author !== (me||'Anonym')){
+      const notif = { id:'notif_cmt_'+c.id, type:'comment', projectId:c.projectId, actor:c.author,
+        text:`${c.author}: ${String(c.content||'').slice(0,60)}`, ts:c.createdAt || Date.now(), read:false };
+      this.addNotification(notif);
+    }
     if(this.onLiveComment) this.onLiveComment(c);
   },
+
+  // ── NOTIFICATIONS (thông báo chia sẻ & comment) ──
+  getNotifications(){
+    try { return JSON.parse(localStorage.getItem('spark_notifications')||'[]'); } catch(_){ return []; }
+  },
+  saveNotifications(list){ localStorage.setItem('spark_notifications', JSON.stringify(list)); },
+  addNotification(n){
+    const all = this.getNotifications();
+    if(all.some(x=>x.id===n.id)) return;
+    all.unshift(n);
+    if(all.length>50) all.length = 50;
+    this.saveNotifications(all);
+    if(this.onNotification) this.onNotification(n);
+  },
+  markNotifRead(id){
+    this.saveNotifications(this.getNotifications().map(n=>n.id===id?{...n,read:true}:n));
+  },
+  markAllNotifsRead(){
+    this.saveNotifications(this.getNotifications().map(n=>({...n,read:true})));
+  },
+  unreadNotifCount(){ return this.getNotifications().filter(n=>!n.read).length; },
+  clearNotifications(){ this.saveNotifications([]); },
 
   async pushSupabase(table, payload){
     if(!this.supabase) return;

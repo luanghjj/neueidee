@@ -78,6 +78,11 @@ const App = {
     this.checkIOSInstallPrompt();
     if('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
     DB.onLiveComment = c => this.handleLiveComment(c);
+    DB.onLiveShare = s => this.handleLiveShare(s);
+    DB.onNotification = () => this.renderNotifBadge();
+    document.getElementById('btn-notif-mob')?.addEventListener('click', () => this.openNotifCenter());
+    document.getElementById('btn-notif-desk')?.addEventListener('click', () => this.openNotifCenter());
+    this.renderNotifBadge();
     DB.syncSupabase().then(() => {
       this.renderOverview();
       this.renderIdeas();
@@ -121,6 +126,7 @@ const App = {
       const n = document.getElementById('setup-name').value.trim();
       if(!n){ this.toast('Bitte zuerst deinen Namen eingeben'); return; }
       DB.setUser(n); DB.setUserEmoji(chosen);
+      DB.initRealtime();
       this.closeModal('modal-setup');
       this.renderProfile(); this.renderOverview();
       this.toast(`Willkommen, ${n}! ⚡`);
@@ -203,6 +209,75 @@ const App = {
   handleLiveComment(c){
     if(this.state.currentProjectId === c.projectId) this.renderComments(c.projectId, true);
     this.toast(`💬 ${c.author}: ${this.snippet(c.content, 36)}`, 2600);
+  },
+
+  handleLiveShare(s){
+    if(!s) return;
+    const proj = DB.getProject(s.projectId);
+    this.toast(`🔔 ${s.owner} đã chia sẻ dự án "${proj ? proj.name : 'mới'}" với bạn`, 3200);
+    if(this.state.currentProjectId === s.projectId) this.renderShareSection(s.projectId);
+    if('Notification' in window && Notification.permission === 'granted' && navigator.serviceWorker){
+      try { navigator.serviceWorker.ready.then(r => r.showNotification('Spark 🔔', { body: `${s.owner} đã chia sẻ dự án với bạn`, icon:'./assets/icon-192.png', tag:'spark-share' })).catch(()=>{}); } catch(_) {}
+    }
+  },
+
+  renderNotifBadge(){
+    const count = DB.unreadNotifCount();
+    ['notif-badge-mob','notif-badge-desk'].forEach(id => {
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.textContent = count>99 ? '99+' : count;
+      el.classList.toggle('hidden', count===0);
+    });
+  },
+
+  renderNotifList(){
+    const list = document.getElementById('notif-list');
+    const notifs = DB.getNotifications();
+    if(!list) return;
+    if(!notifs.length){
+      list.innerHTML = `<p class="text-sm text-secondary italic py-6 text-center border border-dashed border-border rounded-xl">Chưa có thông báo nào.</p>`;
+      return;
+    }
+    list.innerHTML = notifs.map(n => `
+      <div class="notif-item ${n.read?'':'unread'}" data-id="${n.id}" data-proj="${n.projectId || ''}" role="button" tabindex="0">
+        <div class="notif-dot"></div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm ${n.read?'text-secondary':'font-semibold text-primary'}">${n.type==='share'?'🤝':'💬'} ${this.esc(n.text)}</p>
+          <p class="text-[11px] text-dim mt-0.5">${this.ago(n.ts)}</p>
+        </div>
+      </div>`).join('');
+    list.querySelectorAll('.notif-item').forEach(item => {
+      const open = () => {
+        DB.markNotifRead(item.dataset.id);
+        this.renderNotifBadge();
+        item.classList.remove('unread');
+        const proj = item.dataset.proj;
+        if(proj && DB.getProject(proj)){
+          this.closeModal('modal-notif-center');
+          this.openProjectDetail(proj);
+        } else {
+          this.renderNotifList();
+        }
+      };
+      item.onclick = open;
+      item.onkeydown = e => { if(e.key==='Enter'||e.key===' ') { e.preventDefault(); open(); } };
+    });
+  },
+
+  openNotifCenter(){
+    if('Notification' in window && Notification.permission === 'default' && !localStorage.getItem('spark_notif_asked')){
+      localStorage.setItem('spark_notif_asked','1');
+      Notification.requestPermission().catch(()=>{});
+    }
+    this.renderNotifList();
+    const btnClear = document.getElementById('btn-notif-clear');
+    if(btnClear) btnClear.onclick = () => {
+      DB.clearNotifications();
+      this.renderNotifBadge();
+      this.openNotifCenter();
+    };
+    this.openModal('modal-notif-center');
   },
 
   toast(msg, dur=2200){
@@ -1273,7 +1348,7 @@ const App = {
         if(!nick){ this.toast('Nhập Nickname bạn bè 👤'); return; }
         if(!projId){ this.toast('Tạo hoặc chọn dự án 📁'); return; }
         await DB.shareProject(projId, nick);
-        this.toast(`Đã chia sẻ với "${nick}" 🤝`);
+        this.toast(`Đã chia sẻ với "${nick}" — người đó sẽ nhận thông báo 🔔`);
         this.closeModal('modal-share-center');
         this.openProjectDetail(projId);
       };
@@ -1490,7 +1565,7 @@ const App = {
       }
       this.renderShareSection(id);
       this.renderProjects();
-      this.toast(`✅ Mit "${share.sharedWith}" geteilt`);
+      this.toast(`✅ Mit "${share.sharedWith}" geteilt — Empfänger wird benachrichtigt 🔔`);
     };
     this.renderChecklist(id);
     document.getElementById('btn-check-add').onclick = () => {
@@ -1559,15 +1634,14 @@ const App = {
   },
 
   openShareCenter(defaultProjectId=null){
-    let projects = DB.getProjects();
+    const projects = DB.getProjects();
     const sel = document.getElementById('share-center-project-select');
     if(sel){
       if(!projects.length){
-        const defaultProj = DB.addProject({ name: 'Dự án mới chia sẻ', desc: 'Dự án cộng tác Realtime', status: 'in_progress', tags: ['share'] });
-        projects = [defaultProj];
-        defaultProjectId = defaultProj.id;
+        sel.innerHTML = `<option value="">Chưa có dự án nào — tạo dự án trước</option>`;
+      } else {
+        sel.innerHTML = projects.map(p=>`<option value="${p.id}" ${p.id===(defaultProjectId||projects[0]?.id)?'selected':''}>${this.esc(p.name)}</option>`).join('');
       }
-      sel.innerHTML = projects.map(p=>`<option value="${p.id}" ${p.id===(defaultProjectId||projects[0]?.id)?'selected':''}>${this.esc(p.name)}</option>`).join('');
     }
     this.renderSharedCenterList();
     this.openModal('modal-share-center');
@@ -1681,6 +1755,7 @@ const App = {
       const n = document.getElementById('settings-name').value.trim();
       if(!n){ this.toast('Namen eingeben'); return; }
       DB.setUser(n);
+      DB.initRealtime();
       DB.syncShares().then(() => this.renderProjects());
       this.renderProfile(); this.renderOverview();
       this.toast('Profil gespeichert ✅');
