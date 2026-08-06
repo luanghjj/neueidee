@@ -532,6 +532,19 @@ const App = {
     return rest.length > 100 ? rest.slice(0, 100) + '…' : rest;
   },
 
+  quickShareIdea(id, e){
+    if(e) e.stopPropagation();
+    const idea = DB.getIdea(id);
+    if(!idea) return;
+    let projId = idea.projectId;
+    if(!projId){
+      const newP = DB.addProject({ name: this.getIdeaTitle(idea.content), desc: idea.content, status: 'in_progress', tags: idea.tags||[] });
+      DB.updateIdea(id, { projectId: newP.id });
+      projId = newP.id;
+    }
+    this.openShareCenter(projId);
+  },
+
   ideaListCard(i, idx){
     const st = this.stages[i.stage] || this.stages.spark;
     const tagsAll = i.tags||[];
@@ -556,7 +569,9 @@ const App = {
           ${this.stagePill(i.stage)}
           ${i.prototypeHtml?'<span class="tag text-[11px] flex items-center gap-1 bg-surface-mid border border-border"><span class="material-symbols-outlined" style="font-size:12px">view_quilt</span> Prototyp</span>':''}
           ${tags}${more}${imgCount}
-          <span class="text-xs text-secondary ml-auto">${this.ago(i.createdAt)}</span>
+          <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2.5 !text-xs ml-auto flex items-center gap-1 font-semibold" title="Chia sẻ &amp; Live Chat">
+            <span class="material-symbols-outlined" style="font-size:14px">handshake</span> Chia sẻ
+          </button>
         </div>
       </div>
     </div>`;
@@ -571,7 +586,9 @@ const App = {
       <div class="stage-bar" style="background:${st.color}"></div>
       <div class="pl-2 flex items-center gap-3">
         <p class="text-sm font-semibold text-primary truncate flex-1">${this.esc(title)}</p>
-        <span class="text-xs text-secondary flex-shrink-0">${this.ago(i.createdAt)}</span>
+        <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2 !text-xs flex items-center gap-1 font-semibold" title="Chia sẻ &amp; Live Chat">
+          <span class="material-symbols-outlined" style="font-size:14px">handshake</span>
+        </button>
         ${this.stagePill(i.stage)}
       </div>
     </div>`;
@@ -595,7 +612,9 @@ const App = {
       </div>
       <div class="pl-2 mt-2 flex items-center gap-2 flex-wrap">
         ${tags}
-        <span class="text-xs text-secondary ml-auto">${this.ago(i.createdAt)}</span>
+        <button onclick="App.quickShareIdea('${i.id}', event)" class="btn-secondary !py-1 !px-2.5 !text-xs ml-auto flex items-center gap-1 font-semibold" title="Chia sẻ &amp; Live Chat">
+          <span class="material-symbols-outlined" style="font-size:14px">handshake</span>
+        </button>
       </div>
     </div>`;
   },
@@ -1187,7 +1206,9 @@ const App = {
           <div class="flex-1 min-w-0">
             <div class="flex items-start justify-between gap-2">
               <p class="text-[15px] font-semibold leading-tight line-clamp-2">${this.esc(p.name)}</p>
-              <span class="material-symbols-outlined text-dim flex-shrink-0" style="font-size:18px" aria-hidden="true">chevron_right</span>
+              <button class="btn-secondary !py-1 !px-2.5 !text-xs flex items-center gap-1 font-bold text-primary flex-shrink-0" onclick="event.stopPropagation(); App.openShareCenter('${p.id}')" title="Chia sẻ &amp; Live Chat">
+                <span class="material-symbols-outlined" style="font-size:14px">handshake</span> Share
+              </button>
             </div>
             <span class="status-badge ${p.status} mt-1.5">${this.statusLabel[p.status]||p.status}</span>
             ${DB.isProjectShared(p.id)?'<span class="text-[10px] font-semibold bg-surface-high text-primary border border-border rounded-full px-2 py-0.5 ml-1 align-middle">Geteilt</span>':''}
