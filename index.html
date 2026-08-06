@@ -51,8 +51,8 @@ tailwind.config = {
   .no-scroll::-webkit-scrollbar { display: none; }
   .no-scroll { -ms-overflow-style: none; scrollbar-width: none; }
   /* Modal */
-  #modal-capture, #modal-idea, #modal-project-form, #modal-project-detail, #modal-prototype { display:none; position:fixed; inset:0; z-index:200; }
-  #modal-capture.open, #modal-idea.open, #modal-project-form.open, #modal-project-detail.open, #modal-prototype.open { display:flex; flex-direction:column; justify-content:flex-end; }
+  #modal-capture, #modal-idea, #modal-project-form, #modal-project-detail, #modal-prototype, #modal-share-center { display:none; position:fixed; inset:0; z-index:200; }
+  #modal-capture.open, #modal-idea.open, #modal-project-form.open, #modal-project-detail.open, #modal-prototype.open, #modal-share-center.open { display:flex; flex-direction:column; justify-content:flex-end; }
   .sheet { background:#fff; border-radius:24px 24px 0 0; max-height:92vh; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .35s cubic-bezier(.32,.72,0,1); }
   .open .sheet { transform:translateY(0); }
   .sheet-full { height:93vh; border-radius:24px 24px 0 0; }
@@ -133,10 +133,10 @@ tailwind.config = {
   .side-btn .material-symbols-outlined { font-size:22px; }
   /* Desktop modal centering */
   @media (min-width:768px){
-    #modal-capture.open, #modal-idea.open, #modal-project-form.open, #modal-project-detail.open, #modal-prototype.open { justify-content:center; }
+    #modal-capture.open, #modal-idea.open, #modal-project-form.open, #modal-project-detail.open, #modal-prototype.open, #modal-share-center.open { justify-content:center; }
     .sheet { max-width:560px; width:100%; margin:0 auto; border-radius:20px; max-height:88vh; }
     .sheet-full { height:auto; max-height:88vh; border-radius:20px; }
-    #modal-project-detail .sheet, #modal-prototype .sheet { max-width:820px; }
+    #modal-project-detail .sheet, #modal-prototype .sheet, #modal-share-center .sheet { max-width:820px; }
   }
   /* Accessibility: visible keyboard focus */
   :focus-visible { outline:2px solid #000; outline-offset:2px; border-radius:8px; }
@@ -846,7 +846,7 @@ tailwind.config = {
 <div id="toast" class="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/data.js?v=21"></script>
-<script src="js/app.js?v=21"></script>
+<script src="js/data.js?v=22"></script>
+<script src="js/app.js?v=22"></script>
 </body>
 </html>
