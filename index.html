@@ -397,6 +397,12 @@ tailwind.config = {
         <div id="stage-filter-row" class="flex gap-2 overflow-x-auto no-scroll pb-3 -mx-4 px-4 md:mx-0 md:px-0"></div>
       </div>
     </header>
+    <div id="swipe-hint" class="hidden px-4 md:px-10 pt-3">
+      <div class="w-full max-w-[1180px] mx-auto flex items-center justify-between gap-3 bg-surface border border-border rounded-xl px-4 py-2.5 text-xs text-secondary shadow-ambient">
+        <span class="flex items-center gap-2"><span class="material-symbols-outlined text-primary" style="font-size:16px" aria-hidden="true">swipe</span> Swipe nach links = Archivieren · nach rechts = nächste Phase</span>
+        <button id="swipe-hint-close" class="text-secondary hover:text-primary p-1" aria-label="Schließen">✕</button>
+      </div>
+    </div>
     <div id="idea-scroll" class="flex-1 overflow-y-auto px-4 md:px-10 pt-3 pb-nav">
       <div id="idea-feed" class="w-full max-w-[1180px] mx-auto flex flex-col gap-2"></div>
     </div>
@@ -683,6 +689,15 @@ tailwind.config = {
     </div>
     <div class="overflow-y-auto flex-1 px-5 py-4 space-y-4">
       <input type="hidden" id="proj-edit-id">
+      <div>
+        <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Titelbild</label>
+        <input type="file" id="proj-cover-input" accept="image/*" class="hidden">
+        <div id="proj-cover-area" class="relative h-36 rounded-xl border border-dashed border-border bg-surface-mid flex items-center justify-center overflow-hidden cursor-pointer" role="button" aria-label="Titelbild hochladen">
+          <span id="proj-cover-empty" class="text-sm text-secondary flex items-center gap-2"><span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">add_photo_alternate</span> Titelbild hinzufügen</span>
+          <img id="proj-cover-preview" class="hidden absolute inset-0 w-full h-full object-cover" alt="Titelbild-Vorschau">
+          <button id="proj-cover-rm" class="hidden absolute top-2 right-2 icon-btn-44 rounded-full bg-white/90 backdrop-blur text-secondary" aria-label="Titelbild entfernen"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">close</span></button>
+        </div>
+      </div>
       <div>
         <label class="text-xs font-semibold uppercase tracking-widest text-dim block mb-2">Projektname *</label>
         <input type="text" id="proj-name" class="inp" placeholder="Mein tolles Projekt...">

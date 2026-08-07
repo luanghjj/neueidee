@@ -16,6 +16,7 @@ const App = {
     projTags: [],
     editProjId: null,
     sourceIdeaId: null,
+    projCover: null,
     pendingDelete: null,
     lastFocus: null,
     currentProjectId: null,
@@ -457,6 +458,22 @@ const App = {
         this.openCaptureModal();
       }
     };
+
+    // One-time swipe hint
+    const hint = document.getElementById('swipe-hint');
+    if(hint && !localStorage.getItem('spark_swipe_hint_seen')){
+      hint.classList.remove('hidden');
+      document.getElementById('swipe-hint-close').onclick = () => {
+        hint.classList.add('hidden');
+        localStorage.setItem('spark_swipe_hint_seen','1');
+      };
+    }
+  },
+
+  hideSwipeHint(){
+    const hint = document.getElementById('swipe-hint');
+    if(hint) hint.classList.add('hidden');
+    localStorage.setItem('spark_swipe_hint_seen','1');
   },
 
   resetIdeaFilters(){
@@ -613,7 +630,8 @@ const App = {
     if(!idea) return;
     let projId = idea.projectId;
     if(!projId){
-      const newP = DB.addProject({ name: this.getIdeaTitle(idea.content), desc: idea.content, status: 'in_progress', tags: idea.tags||[] });
+      if(!confirm('Noch kein Projekt vorhanden. Projekt aus dieser Idee erstellen und teilen?')) return;
+      const newP = DB.addProject({ name: this.getIdeaTitle(idea.content), description: idea.content, status: 'in_progress', tags: idea.tags||[] });
       DB.updateIdea(id, { projectId: newP.id });
       projId = newP.id;
     }
@@ -1002,6 +1020,7 @@ const App = {
     const isArchived = idea.stage==='archived';
     document.getElementById('idea-modal-title').textContent = this.stages[idea.stage]?.label || 'Idee';
     const next = isArchived ? null : this.stageOrder[this.stageOrder.indexOf(idea.stage)+1];
+    const prev = isArchived ? null : this.stageOrder[this.stageOrder.indexOf(idea.stage)-1];
     const timeline = (idea.timeline||[]).slice().reverse();
     const linkedProj = idea.projectId ? DB.getProject(idea.projectId) : null;
     const body = document.getElementById('idea-modal-body');
@@ -1016,6 +1035,7 @@ const App = {
 
       <div class="grid grid-cols-2 gap-2 mt-6">
         ${next?`<button id="btn-idea-advance" class="btn-primary col-span-2 py-3"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">arrow_forward</span> Weiter zu ${this.stages[next].label}</button>`:''}
+        ${prev?`<button id="btn-idea-back" class="btn-secondary col-span-2 py-3"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">arrow_back</span> Zurück zu ${this.stages[prev].label}</button>`:''}
         ${isArchived?`<button id="btn-idea-restore" class="btn-primary col-span-2 py-3"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">unarchive</span> Wiederherstellen</button>`:''}
         <button id="btn-idea-ai" class="btn-secondary col-span-2 py-3 flex items-center justify-center gap-2"><span class="material-symbols-outlined" style="font-size:18px" aria-hidden="true">auto_awesome</span> KI-Gliederung &amp; Vorschläge</button>
         <button id="btn-idea-edit" class="btn-secondary py-3"><span class="material-symbols-outlined" style="font-size:16px" aria-hidden="true">edit</span> Bearbeiten</button>
@@ -1083,6 +1103,11 @@ const App = {
       this.openIdeaDetail(id); this.renderIdeas(); this.renderOverview();
       this.toast(`Verschoben zu ${this.stages[next].label}`);
     };
+    if(prev) document.getElementById('btn-idea-back').onclick = () => {
+      DB.addTimelineEntry(id, prev, `Zurück zu ${this.stages[prev].label}`);
+      this.openIdeaDetail(id); this.renderIdeas(); this.renderOverview();
+      this.toast(`Zurück zu ${this.stages[prev].label} ↩️`);
+    };
     if(isArchived) document.getElementById('btn-idea-restore').onclick = () => this.restoreIdea(id);
     if(linkedProj) document.getElementById('btn-view-linked').onclick = () => { this.closeModal('modal-idea'); this.navigate('journey'); this.openProjectDetail(linkedProj.id); };
     document.getElementById('btn-idea-edit').onclick = () => this.startEditIdea(id, idea.content);
@@ -1108,7 +1133,8 @@ const App = {
     document.getElementById('btn-idea-share')?.addEventListener('click', () => {
       let projId = idea.projectId;
       if(!projId){
-        const newP = DB.addProject({ name: this.getIdeaTitle(idea.content), desc: idea.content, status: 'in_progress', tags: idea.tags||[] });
+        if(!confirm('Noch kein Projekt vorhanden. Projekt aus dieser Idee erstellen und teilen?')) return;
+        const newP = DB.addProject({ name: this.getIdeaTitle(idea.content), description: idea.content, status: 'in_progress', tags: idea.tags||[] });
         DB.updateIdea(id, { projectId: newP.id });
         projId = newP.id;
       }
@@ -1218,8 +1244,8 @@ const App = {
       if(!swiping) return;
       el.style.transition='transform .3s cubic-bezier(.32,.72,0,1),opacity .3s';
       el.style.transform=''; el.style.opacity='';
-      if(lastDx>T){ el.dataset.swiped='1'; this.swipeAdvance(id); }
-      else if(lastDx<-T){ el.dataset.swiped='1'; this.archiveIdea(id); }
+      if(lastDx>T){ el.dataset.swiped='1'; this.hideSwipeHint(); this.swipeAdvance(id); }
+      else if(lastDx<-T){ el.dataset.swiped='1'; this.hideSwipeHint(); this.archiveIdea(id); }
       swiping=false; sx=undefined;
     };
     el.addEventListener('pointerup', end);
@@ -1340,6 +1366,27 @@ const App = {
       else this.openProjectModal();
     });
 
+    // Titelbild upload
+    const coverArea = document.getElementById('proj-cover-area');
+    const coverInput = document.getElementById('proj-cover-input');
+    if(coverArea && coverInput){
+      coverArea.addEventListener('click', ()=>coverInput.click());
+      coverInput.addEventListener('change', async () => {
+        const f = coverInput.files && coverInput.files[0];
+        if(!f) return;
+        try{
+          this.state.projCover = await DB.compressImage(f);
+          this.setProjCoverUI(this.state.projCover);
+        }catch(err){ this.toast('Bild konnte nicht geladen werden'); }
+        coverInput.value = '';
+      });
+      document.getElementById('proj-cover-rm').addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.state.projCover = null;
+        this.setProjCoverUI(null);
+      });
+    }
+
     const btnShareSubmit = document.getElementById('btn-share-center-submit');
     if(btnShareSubmit){
       btnShareSubmit.onclick = async () => {
@@ -1372,7 +1419,9 @@ const App = {
     this.state.editProjId = projId;
     this.state.projTags = [];
     this.state.projStatus = 'concept';
+    this.state.projCover = null;
     this.state.sourceIdeaId = sourceIdeaId;
+    this.setProjCoverUI(null);
     document.getElementById('proj-form-title').textContent = projId ? 'Projekt bearbeiten' : 'Neues Projekt';
     document.getElementById('proj-edit-id').value = projId||'';
     // conversion: seed name from a snippet, keep full text as description
@@ -1390,12 +1439,31 @@ const App = {
         document.getElementById('proj-link').value = p.link||'';
         this.state.projStatus = p.status;
         this.state.projTags = [...(p.tags||[])];
+        this.state.projCover = p.cover||null;
+        this.setProjCoverUI(p.cover||null);
         document.querySelectorAll('#proj-status-row .chip').forEach(b=>b.classList.toggle('active', b.dataset.status===p.status));
         this.renderProjTags();
       }
     }
     this.openModal('modal-project-form', '#proj-name');
     document.getElementById('proj-name').focus();
+  },
+
+  setProjCoverUI(cover){
+    const preview = document.getElementById('proj-cover-preview');
+    const empty = document.getElementById('proj-cover-empty');
+    const rm = document.getElementById('proj-cover-rm');
+    if(cover){
+      if(preview) preview.src = cover;
+      preview?.classList.remove('hidden');
+      empty?.classList.add('hidden');
+      rm?.classList.remove('hidden');
+    } else {
+      preview?.classList.add('hidden');
+      preview?.removeAttribute('src');
+      empty?.classList.remove('hidden');
+      rm?.classList.add('hidden');
+    }
   },
 
   saveProject(){
@@ -1406,23 +1474,31 @@ const App = {
       description: document.getElementById('proj-desc').value.trim(),
       link: document.getElementById('proj-link').value.trim(),
       tags: [...this.state.projTags],
-      cover: null, gallery: [],
+      cover: this.state.projCover||null, gallery: [],
       sourceIdeaId: this.state.sourceIdeaId||null,
     };
+    let createdId = null;
     if(this.state.editProjId){
       DB.updateProject(this.state.editProjId, data); this.toast('Projekt aktualisiert ✅');
     } else {
       const created = DB.addProject(data);
-      // link the source idea both ways + mark it converted
+      createdId = created ? created.id : null;
+      // link the source idea both ways, keep it in place (no auto-archive)
       if(this.state.sourceIdeaId && created){
-        DB.addTimelineEntry(this.state.sourceIdeaId, 'archived', `In Projekt „${name}“ umgewandelt`);
-        DB.updateIdea(this.state.sourceIdeaId, { projectId: created.id });
+        const srcIdea = DB.getIdea(this.state.sourceIdeaId);
+        if(srcIdea){
+          const timeline = [...(srcIdea.timeline||[]), { stage: srcIdea.stage, note:`In Projekt „${name}“ umgewandelt`, author: DB.getUser()||'Anonym', ts: Date.now() }];
+          DB.updateIdea(this.state.sourceIdeaId, { projectId: created.id, timeline });
+        }
       }
       this.toast('Projekt gespeichert 🗂️');
     }
     this.state.sourceIdeaId = null;
+    this.state.projCover = null;
     this.closeModal('modal-project-form');
     this.navigate('journey'); this.renderOverview(); this.renderProfile(); this.renderIdeas();
+    // open the freshly converted project right away
+    if(createdId) setTimeout(()=>this.openProjectDetail(createdId), 150);
   },
 
   // ── PROJECT DETAIL ──
