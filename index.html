@@ -159,6 +159,8 @@ tailwind.config = {
   .search-wrap input { flex:1; background:transparent; border:none; outline:none; font-size:15px; font-family:inherit; }
   .sort-select { height:44px; border:1px solid #e5e1e1; border-radius:12px; background:#f7f2f2; padding:0 10px; font-size:13px; font-weight:500; font-family:inherit; color:#5e5e5e; cursor:pointer; outline:none; }
   .sort-select:focus { border-color:#000; }
+  .lang-select { height:36px; border:1px solid #e5e1e1; border-radius:10px; background:#f7f2f2; padding:0 8px; font-size:12px; font-weight:600; font-family:inherit; color:#5e5e5e; cursor:pointer; outline:none; flex-shrink:0; }
+  .lang-select:focus { border-color:#000; }
   /* Active tag filter bar */
   .active-tag-bar { display:flex; align-items:center; gap:8px; font-size:13px; }
   /* Voice mic button */
@@ -214,6 +216,7 @@ tailwind.config = {
   html.dark .chip { background-color:#252548 !important; border-color:#3a3a68 !important; color:#8080b0; }
   html.dark .chip.active { background-color:#e8e8f0 !important; color:#0f0f1a !important; border-color:#e8e8f0 !important; }
   html.dark .sort-select { background-color:#252548 !important; border-color:#3a3a68 !important; color:#8080b0; }
+  html.dark .lang-select { background-color:#252548 !important; border-color:#3a3a68 !important; color:#8080b0; }
   html.dark .search-wrap { background-color:#252548 !important; border-color:#3a3a68 !important; }
   html.dark .search-wrap:focus-within { border-color:#6366f1 !important; background-color:#1c1c3a !important; }
   html.dark .tag { background-color:#252548 !important; color:#8080b0 !important; }
@@ -590,6 +593,11 @@ tailwind.config = {
         <button id="btn-voice" class="mic-btn" aria-label="Idee diktieren" title="Diktieren (Sprache zu Text)">
           <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">mic</span>
         </button>
+        <select id="voice-lang" class="lang-select" aria-label="Sprache für Diktat">
+          <option value="auto">Auto</option>
+          <option value="de-DE">Deutsch</option>
+          <option value="vi-VN">Tiếng Việt</option>
+        </select>
         <button id="btn-add-image" class="mic-btn" aria-label="Bild anhängen" title="Bild anhängen">
           <span class="material-symbols-outlined" style="font-size:20px" aria-hidden="true">image</span>
         </button>

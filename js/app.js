@@ -832,14 +832,28 @@ const App = {
   bindVoice(){
     const btn = document.getElementById('btn-voice');
     const hint = document.getElementById('voice-hint');
+    const langSel = document.getElementById('voice-lang');
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if(!SR){
       if(btn){ btn.disabled = true; btn.style.opacity = '.35'; btn.title = 'Spracheingabe wird in diesem Browser nicht unterstützt'; }
       return;
     }
+    if(langSel){
+      const saved = localStorage.getItem('spark_voice_lang');
+      if(saved && [...langSel.options].some(o=>o.value===saved)) langSel.value = saved;
+      langSel.addEventListener('change', () => {
+        localStorage.setItem('spark_voice_lang', langSel.value);
+        if(hint) hint.textContent = `🎙️ ${langSel.options[langSel.selectedIndex].text}`;
+      });
+    }
     const rec = new SR();
-    // Support multi-language detection fallback (defaulting to de-DE or vi-VN if browser is Vietnamese)
-    rec.lang = (navigator.language && (navigator.language.startsWith('vi') || navigator.language.startsWith('de'))) ? navigator.language : 'de-DE';
+    const pickLang = () => {
+      const v = langSel ? langSel.value : 'auto';
+      if(v==='auto'){
+        const nl = (navigator.language||'').toLowerCase();
+        rec.lang = (nl.startsWith('vi') || nl.startsWith('de')) ? navigator.language : 'de-DE';
+      } else rec.lang = v;
+    };
     rec.continuous = false; // continuous = false is 100x more reliable on iOS Safari
     rec.interimResults = true;
     this._rec = rec;
@@ -848,7 +862,7 @@ const App = {
     rec.onstart = () => {
       this.state.voiceOn = true;
       if(btn) btn.classList.add('recording');
-      if(hint) hint.textContent = '🎙️ Höre zu…';
+      if(hint) hint.textContent = `🎙️ Höre zu… (${rec.lang})`;
     };
 
     rec.onresult = e => {
@@ -867,7 +881,19 @@ const App = {
 
     rec.onerror = ev => {
       if(ev.error === 'no-speech') return; // Silence pause is normal
-      if(hint) hint.textContent = ev.error==='not-allowed' ? '❌ Mikrofon verweigert' : '❌ Fehler: ' + ev.error;
+      if(ev.error === 'aborted') return;
+      this.state.voiceOn = false;
+      if(btn) btn.classList.remove('recording');
+      if(!hint) return;
+      const msgs = {
+        'not-allowed': '❌ Mikrofon verweigert — bitte im Browser erlauben',
+        'service-not-allowed': '❌ Sprachdienst vom Browser blockiert',
+        'language-not-supported': '⚠️ Sprachpaket fehlt — iPhone: Einstellungen → Allgemein → Tastatur → Diktat → Sprache',
+        'network': '❌ Internetverbindung benötigt (Erkennung läuft in der Cloud)',
+        'audio-capture': '❌ Mikrofon wird von einer anderen App verwendet',
+        'audio-output': '❌ Kein Mikrofon gefunden'
+      };
+      hint.textContent = msgs[ev.error] || '❌ Fehler: ' + ev.error;
     };
 
     rec.onend = () => {
@@ -894,12 +920,18 @@ const App = {
           if(hint) hint.textContent = '';
           return;
         }
+        if(!window.isSecureContext){
+          if(hint) hint.textContent = '❌ Diktat braucht HTTPS — Seite über https:// öffnen (nicht http://)';
+          return;
+        }
         const ta = document.getElementById('capture-text');
         baseText = ta ? ta.value.trim() : '';
+        pickLang();
         this.state.voiceOn = true;
         try {
           rec.start();
         } catch(e) {
+          this.state.voiceOn = false;
           if(hint) hint.textContent = '❌ Mikrofon konnte nicht gestartet werden';
         }
       };
